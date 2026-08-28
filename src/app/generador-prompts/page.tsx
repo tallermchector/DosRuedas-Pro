@@ -25,7 +25,8 @@ import {
   Type,
   LayoutGrid,
   Info,
-  Compass
+  Compass,
+  Sliders
 } from 'lucide-react';
 import type { AssetPromptInput, AssetPromptOutput } from '@/ai/flows/generate-asset-prompt';
 import { PROMPT_LIBRARY, type PromptLibraryItem } from '@/data/prompt-library';
