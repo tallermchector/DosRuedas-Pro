@@ -27,11 +27,7 @@ import {
   Sliders,
   Check
 } from 'lucide-react';
-import {
-  generateAssetPrompt,
-  type AssetPromptInput,
-  type AssetPromptOutput
-} from '@/ai/flows/generate-asset-prompt';
+import type { AssetPromptInput, AssetPromptOutput } from '@/ai/flows/generate-asset-prompt';
 
 const PRESET_EXAMPLES: { label: string; data: AssetPromptInput }[] = [
   {
@@ -139,8 +135,18 @@ export default function GeneradorPromptsPage() {
     setLoading(true);
 
     try {
-      const result = await generateAssetPrompt(formData);
-      setGeneratedResult(result);
+      const res = await fetch('/api/generate-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al generar el prompt con Genkit.');
+      }
+
+      setGeneratedResult(data);
     } catch (err: unknown) {
       console.error('Error generating asset prompt:', err);
       setErrorMsg(
