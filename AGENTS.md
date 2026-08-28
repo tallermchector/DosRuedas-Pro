@@ -6,6 +6,7 @@ Como agente autónomo, tu rol es mantener la integridad arquitectónica y provee
 
 # Core Stack Rules
 - **Arquitectura Base:** Next.js utilizando estrictamente **App Router**.
+- **Gestor de Paquetes:** Utilizar estrictamente `pnpm` (`packageManager: "pnpm@..."`).
 - **Estructura de UI:** Todos los componentes principales de interfaz y de páginas deben alojarse de forma modular en `src/components/paginas/`.
 - **Tipado:** Uso riguroso de TypeScript. El uso explícito del tipo `any` está prohibido.
 - **Estilos y Exportación PDF:**
