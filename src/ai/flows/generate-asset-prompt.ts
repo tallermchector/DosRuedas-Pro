@@ -52,8 +52,53 @@ const AssetPromptOutputSchema = z.object({
 });
 export type AssetPromptOutput = z.infer<typeof AssetPromptOutputSchema>;
 
-export async function generateAssetPrompt(input: AssetPromptInput): Promise<AssetPromptOutput> {
-  return generateAssetPromptFlow(input);
+function buildDeterministicPrompt(input: AssetPromptInput): AssetPromptOutput {
+  const loc = input.locationContext || 'Mar del Plata, Argentina';
+  const cam = input.cameraAndMedium || 'Sony A7R IV, 35mm f/2, high-end commercial photography';
+  const notes = input.additionalNotes ? ` ${input.additionalNotes}.` : '';
+
+  let subjectPart = '';
+  let colorPart = '';
+  let stylePart = '';
+  let filename = input.targetFile || 'asset-envios-dosruedas.webp';
+
+  if (input.assetType === 'typography-3d') {
+    subjectPart = `The text ${input.subjectAndAction} as chunky 3D extruded lettering in Anton display font style. Front faces in glossy electric kinetic yellow (#FFEC01), lateral block extrusion in solid Egyptian royal navy blue (#0636A5).`;
+    colorPart = `Strict 3-color brand compliance: Egyptian Royal Navy Blue (#0636A5 / #021440), Electric Kinetic Yellow (#FFEC01), Pure White (#FFFFFF).`;
+    stylePart = `Octane 3D render style, directional key light from upper-left, sharp bevel highlights, soft ambient occlusion contact shadow, pure white studio ground (#FFFFFF).`;
+    if (!input.targetFile) filename = 'type-asset-3d.png';
+  } else if (input.assetType === '3d-packaging-fleet') {
+    subjectPart = `Glossy 3D product render: ${input.subjectAndAction}. Friendly slightly toy-like proportions, clean product-render composition.`;
+    colorPart = `Materials: light-blue (#0950F6 to #0636A5) glossy plastic and metal, electric-yellow (#FFEC01) accents, plain kraft cardboard.`;
+    stylePart = `Soft studio lighting from upper-left with gentle rim light, soft contact shadow, pure-white background for cut-out use.`;
+    if (!input.targetFile) filename = 'asset-3d-packaging.png';
+  } else {
+    subjectPart = `Professional courier from Envíos DosRuedas. Appearance, gear, and uniform must strictly match the character design and clothing shown in Image 2 (Triptych), Image 3 (Jackets), and Image 4 (Polo/Cap). ${input.subjectAndAction}.`;
+    colorPart = `Use Image 1 (Logo) as the primary source for color calibration. Navy Blue (#0636A5) and Electric Yellow (#FFEC01). Textures must reflect the softshell and cotton materials from the reference images.`;
+    stylePart = `${cam}. Sharp focus on the technical fabrics of the uniform shown in references.${notes}`;
+  }
+
+  const promptText = `${subjectPart} Location: ${loc}. Coastal city architecture, asphalt textures, and Atlantic maritime light. ${stylePart} ${colorPart} Maintain character consistency based on the provided character sheet. No text unless specifically requested via the logo reference. 8k resolution, ultra-realistic, high resolution. --ar ${input.aspectRatio} --style raw --v 6.0`;
+
+  return {
+    title: `Asset R2I: ${input.subjectAndAction.slice(0, 45)}...`,
+    promptText,
+    coreStructure: {
+      subjectAndReferences: subjectPart,
+      settingContext: `${loc} con luz atlántica de Mar del Plata`,
+      styleMedium: stylePart,
+      colorAndBranding: colorPart,
+      technicalConstraints: `Consistencia de uniforme y colores corporativos, sin tipografías no solicitadas, --ar ${input.aspectRatio}`
+    },
+    parameters: {
+      aspectRatio: `--ar ${input.aspectRatio}`,
+      recommendedModel: 'Midjourney v6.0 / Imagen 3 / Flux.1',
+      resolutionTarget: '2K / 4K Photorealistic',
+      suggestedFilename: filename
+    },
+    altTextEs: `Envíos DosRuedas: ${input.subjectAndAction.replace(/"/g, '')} en Mar del Plata.`,
+    brandComplianceNotes: 'Generado con la Plantilla Maestra R2I vinculando las 4 referencias oficiales (Logo, Tríptico, Chaquetas Softshell y Polo/Gorra).'
+  };
 }
 
 const promptDefinition = ai.definePrompt({
@@ -107,7 +152,36 @@ const generateAssetPromptFlow = ai.defineFlow(
     outputSchema: AssetPromptOutputSchema,
   },
   async (input) => {
-    const { output } = await promptDefinition(input);
-    return output!;
+    try {
+      const { output } = await promptDefinition(input);
+      if (output) return output;
+    } catch (primaryErr: unknown) {
+      console.warn('Gemini 2.5 Flash busy (503/high demand), applying model fallback...', primaryErr);
+      
+      // Attempt with fallback models via generate
+      const fallbackModels = ['googleai/gemini-1.5-flash', 'googleai/gemini-1.5-pro', 'googleai/gemini-2.0-flash'];
+      for (const modelName of fallbackModels) {
+        try {
+          const res = await ai.generate({
+            model: modelName,
+            prompt: `Generate a visual prompt for Envíos DosRuedas following the R2I Master Template.
+Input: ${JSON.stringify(input)}
+Output must conform to JSON schema with title, promptText, coreStructure, parameters, altTextEs, brandComplianceNotes.`,
+            output: { schema: AssetPromptOutputSchema }
+          });
+          if (res.output) return res.output;
+        } catch {
+          // continue to next model
+        }
+      }
+    }
+    
+    // Deterministic fallback guarantee
+    return buildDeterministicPrompt(input);
   }
 );
+
+export async function generateAssetPrompt(input: AssetPromptInput): Promise<AssetPromptOutput> {
+  return generateAssetPromptFlow(input);
+}
+

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
@@ -17,92 +17,27 @@ import {
   MapPin,
   FileCode,
   ShieldCheck,
-  Zap,
   Box,
-  Truck,
   RotateCcw,
   Loader2,
-  ExternalLink,
-  ChevronRight,
-  Sliders,
-  Check
+  Check,
+  Search,
+  Type,
+  LayoutGrid,
+  Info,
+  Compass
 } from 'lucide-react';
 import type { AssetPromptInput, AssetPromptOutput } from '@/ai/flows/generate-asset-prompt';
-
-const PRESET_EXAMPLES: { label: string; data: AssetPromptInput }[] = [
-  {
-    label: '📸 Rider en la Rambla Casino (Home Hero)',
-    data: {
-      assetType: 'rider-commercial-photo',
-      subjectAndAction:
-        'Rider in late twenties riding a light-blue delivery scooter along the Rambla, with the Casino Central stone facade and Atlantic ocean horizon behind him. Confident half-smile, steady hand on handlebars.',
-      locationContext: 'Rambla Casino Central, Mar del Plata, Argentina',
-      cameraAndMedium: 'Sony A7R IV, 35mm f/2, Kodak Portra 400 tones with golden hour oceanic light',
-      aspectRatio: '16:9',
-      targetFile: 'home-hero-rider-rambla-1920x1080.webp',
-      uiLocation: 'Home.tsx / Hero Section',
-      additionalNotes: 'Golden hour sun low over the ocean, cool blue shadows on pavement.'
-    }
-  },
-  {
-    label: '📦 Entrega Flex en Mostrador de Comercio',
-    data: {
-      assetType: 'rider-commercial-photo',
-      subjectAndAction:
-        'Woman owner of a boutique clothing shop handing a stack of 3 kraft boxes to a uniformed DosRuedas courier in the doorway of her store.',
-      locationContext: 'Calle Güemes commercial zone, Mar del Plata',
-      cameraAndMedium: 'Canon EOS R5, 50mm f/2, natural documentary commercial lighting',
-      aspectRatio: '4:3',
-      targetFile: 'home-ecommerce-retiro-local-1600x1200.webp',
-      uiLocation: 'Home.tsx / Soluciones Industrias',
-      additionalNotes: 'Shelves with folded garments behind, scooter parked at kerb outside out of focus.'
-    }
-  },
-  {
-    label: '✨ 3D Extruido: "ENVÍOS EXPRESS" (T1)',
-    data: {
-      assetType: 'typography-3d',
-      subjectAndAction:
-        'The text "ENVÍOS EXPRESS" as chunky 3D extruded lettering in heavy Anton display font style. Glossy kinetic yellow front faces, deep navy blue lateral extrusion block.',
-      locationContext: 'Seamless pure white studio floor with soft ambient contact shadow',
-      cameraAndMedium: 'Octane 3D render, PBR materials, directional key light from upper-left',
-      aspectRatio: '3:2',
-      targetFile: 'type-envios-express.png',
-      uiLocation: 'ExpressHero.tsx / ServiceCard.tsx',
-      additionalNotes: 'Sharp beveled edges, faint yellow specular ground reflection.'
-    }
-  },
-  {
-    label: '🏭 Depósito & Hub 3PL Friuli 1972 (Fulfillment)',
-    data: {
-      assetType: 'rider-commercial-photo',
-      subjectAndAction:
-        'Bright distribution hub interior with steel shelving stocked with kraft boxes and QR tagged bins; courier in navy polo scanning a bin with smartphone.',
-      locationContext: 'Base de Operaciones Friuli 1972, Chauvín, Mar del Plata',
-      cameraAndMedium: 'Nikon Z8, 24mm f/4, crisp logistics documentary look',
-      aspectRatio: '16:9',
-      targetFile: '3pl-hero-deposito-friuli-1920x1080.webp',
-      uiLocation: 'FulfillmentHero.tsx (3PL Plan)',
-      additionalNotes: 'Epoxy floor, natural light from high windows mixed with LED strips.'
-    }
-  },
-  {
-    label: '📦 Paquetería 3D: Pila de Cajas Kraft (A3)',
-    data: {
-      assetType: '3d-packaging-fleet',
-      subjectAndAction:
-        'Three kraft cardboard boxes of decreasing size stacked slightly offset, the middle one wrapped with brand-blue tape and top one with yellow tape band.',
-      locationContext: 'Pure white studio background for cut-out use',
-      cameraAndMedium: 'Glossy 3D product render, upper-left soft studio light with yellow rim',
-      aspectRatio: '1:1',
-      targetFile: 'asset-pila-cajas-1024.png',
-      uiLocation: 'Tarjetas de Beneficios / Cuentas Corrientes',
-      additionalNotes: 'Soft ambient contact shadow underneath, friendly slightly toy-like proportions.'
-    }
-  }
-];
+import { PROMPT_LIBRARY, type PromptLibraryItem } from '@/data/prompt-library';
 
 export default function GeneradorPromptsPage() {
+  // Explorer state
+  const [activeTab, setActiveTab] = useState<'fotos' | 'marca' | 'tipografia'>('fotos');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [copiedItemId, setCopiedItemId] = useState<string | null>(null);
+
+  // Form & Genkit AI state
   const [formData, setFormData] = useState<AssetPromptInput>({
     assetType: 'rider-commercial-photo',
     subjectAndAction: '',
@@ -120,8 +55,59 @@ export default function GeneradorPromptsPage() {
   const [copiedAlt, setCopiedAlt] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handlePresetSelect = (preset: AssetPromptInput) => {
-    setFormData(preset);
+  // Filter library items
+  const currentTabItems = useMemo(() => {
+    return PROMPT_LIBRARY.filter((item) => item.sourceGroup === activeTab);
+  }, [activeTab]);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(currentTabItems.map((item) => item.category)));
+    return ['all', ...cats];
+  }, [currentTabItems]);
+
+  const filteredItems = useMemo(() => {
+    return currentTabItems.filter((item) => {
+      const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchQuery =
+        !q ||
+        item.title.toLowerCase().includes(q) ||
+        item.code.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.uiDestination.toLowerCase().includes(q) ||
+        item.targetFile.toLowerCase().includes(q);
+      return matchCat && matchQuery;
+    });
+  }, [currentTabItems, selectedCategory, searchQuery]);
+
+  // Load into form & scroll to workbench
+  const handleLoadItemToForm = (item: PromptLibraryItem) => {
+    setFormData({
+      assetType: item.assetType,
+      subjectAndAction: item.subjectAndAction,
+      locationContext: item.locationContext,
+      cameraAndMedium: item.cameraAndMedium,
+      aspectRatio: item.aspectRatio,
+      targetFile: item.targetFile,
+      uiLocation: item.uiDestination,
+      additionalNotes: item.additionalNotes || ''
+    });
+
+    const workbenchEl = document.getElementById('r2i-workbench');
+    if (workbenchEl) {
+      workbenchEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Instant copy direct prompt
+  const handleInstantCopy = async (item: PromptLibraryItem) => {
+    try {
+      await navigator.clipboard.writeText(item.fullPromptText);
+      setCopiedItemId(item.id);
+      setTimeout(() => setCopiedItemId(null), 2000);
+    } catch (err) {
+      console.error('Error copying to clipboard:', err);
+    }
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -159,202 +145,334 @@ export default function GeneradorPromptsPage() {
     }
   };
 
-  const handleCopyPrompt = () => {
+  const handleCopyPrompt = async () => {
     if (!generatedResult) return;
-    navigator.clipboard.writeText(generatedResult.promptText);
-    setCopiedPrompt(true);
-    setTimeout(() => setCopiedPrompt(false), 2000);
+    try {
+      await navigator.clipboard.writeText(generatedResult.promptText);
+      setCopiedPrompt(true);
+      setTimeout(() => setCopiedPrompt(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
   };
 
-  const handleCopyAlt = () => {
+  const handleCopyAlt = async () => {
     if (!generatedResult) return;
-    navigator.clipboard.writeText(generatedResult.altTextEs);
-    setCopiedAlt(true);
-    setTimeout(() => setCopiedAlt(false), 2000);
+    try {
+      await navigator.clipboard.writeText(generatedResult.altTextEs);
+      setCopiedAlt(true);
+      setTimeout(() => setCopiedAlt(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy alt text', err);
+    }
   };
 
   return (
-    <div
-      className="min-h-screen text-white relative overflow-hidden selection:bg-[#FFEC01] selection:text-[#021440]"
-      style={{
-        fontFamily: "'Outfit', sans-serif",
-        background: 'linear-gradient(135deg, #021440 0%, #04236B 35%, #0636A5 75%, #00277C 100%)'
-      }}
-    >
-      {/* 1. Background Grid & Radial Orbs (DESIGN.md) */}
+    <div className="min-h-screen bg-[#021440] text-white selection:bg-[#FFEC01] selection:text-[#021440] font-sans relative overflow-x-hidden pb-20">
+      {/* Procedural Route Grid Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <svg className="absolute inset-0 w-full h-full opacity-[0.08]" aria-hidden="true">
-          <pattern id="hero-grid-gen" width="48" height="48" patternUnits="userSpaceOnUse">
-            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#FFFFFF" strokeWidth="0.75" strokeDasharray="2,6" />
-            <circle cx="0" cy="0" r="1.5" fill="#FFEC01" />
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#hero-grid-gen)" />
-        </svg>
-
         <div
-          className="absolute -top-32 left-1/4 w-[750px] h-[550px] rounded-full blur-[140px] opacity-70 pointer-events-none"
+          className="absolute inset-0 opacity-[0.07]"
           style={{
-            background: 'radial-gradient(circle, rgba(255,236,1,0.22) 0%, rgba(255,236,1,0.06) 45%, transparent 70%)'
+            backgroundImage: `radial-gradient(circle at 1px 1px, #FFEC01 1px, transparent 0)`,
+            backgroundSize: '32px 32px'
           }}
         />
-        <div className="absolute top-1/2 -right-40 w-[600px] h-[600px] rounded-full bg-[#0950F6]/25 blur-[160px] pointer-events-none" />
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#0636A5] blur-[160px] rounded-full opacity-40 mix-blend-screen" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-[#FFEC01] blur-[200px] rounded-full opacity-10 mix-blend-screen" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Top Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        {/* Top Header Navigation */}
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#04236B]/60 hover:bg-[#0636A5] border border-white/15 text-xs font-semibold uppercase tracking-wider text-slate-200 hover:text-white transition-all duration-200"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold tracking-wider transition-all border border-white/10 hover:border-[#FFEC01]/50 cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Command Center</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>COMMAND CENTER</span>
             </Link>
 
             <Link
               href="/prompts"
-              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFEC01]/10 hover:bg-[#FFEC01]/20 border border-[#FFEC01]/30 text-xs font-semibold uppercase tracking-wider text-[#FFEC01] transition-all duration-200"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0636A5]/40 hover:bg-[#0636A5]/70 text-[#FFEC01] text-xs font-semibold tracking-wider transition-all border border-[#FFEC01]/30 hover:border-[#FFEC01] cursor-pointer"
             >
-              <BookOpen className="w-4 h-4" />
-              <span>Ver Catálogo T1-T23</span>
+              <Type className="w-3.5 h-3.5" />
+              <span>CATÁLOGO T1-T23</span>
             </Link>
           </div>
 
-          {/* Status Badge */}
-          <div className="flex items-center gap-2 bg-[#04236B]/70 border border-white/15 px-4 py-1.5 rounded-full backdrop-blur-md shadow-lg">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFEC01] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FFEC01]"></span>
+          <div
+            className="flex items-center gap-3 text-xs text-slate-300"
+            style={{ fontFamily: "'Geist Mono', monospace" }}
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
+              R2I ENGINE · GENKIT READY
             </span>
+            <span className="text-white/20">|</span>
+            <span className="text-[#FFEC01]">68 PRESETS DISPONIBLES</span>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <div className="mt-8 mb-10 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0636A5]/80 border border-[#FFEC01]/30 shadow-lg mb-4">
+            <Sparkles className="w-4 h-4 text-[#FFEC01]" />
             <span
               className="text-xs uppercase tracking-widest text-[#FFEC01] font-bold"
               style={{ fontFamily: "'Bebas Neue', cursive" }}
             >
-              Genkit AI Engine · Online
-            </span>
-          </div>
-        </div>
-
-        {/* Header */}
-        <header className="mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#FFEC01]/10 text-[#FFEC01] border border-[#FFEC01]/30 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              R2I MASTER PROMPT GENERATOR
-            </span>
-            <span
-              className="text-xs text-slate-300 uppercase tracking-widest hidden sm:inline"
-              style={{ fontFamily: "'Geist Mono', monospace" }}
-            >
-              GENKIT + GEMINI 2.5 FLASH
+              MOTOR INTELIGENTE DE PROMPTS R2I · SISTEMA DE DISEÑO OFICIAL
             </span>
           </div>
 
           <h1
-            className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white leading-[0.95] mb-4"
+            className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase leading-[0.95] drop-shadow-md"
             style={{ fontFamily: "'Anton', sans-serif" }}
           >
-            GENERADOR INTELIGENTE <span className="text-[#FFEC01]">DE PROMPTS R2I</span>
+            GENERADOR & BIBLIOTECA <span className="text-[#FFEC01]">ENVÍOS DOSRUEDAS</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-200 max-w-4xl font-normal leading-relaxed">
-            Crea directivas visuales de nivel comercial que vinculan automáticamente las{' '}
-            <strong className="text-[#FFEC01]">4 referencias visuales oficiales de marca</strong> (Logo, Tríptico del
-            Rider, Chaqueta Softshell y Kit de Uniforme) para garantizar consistencia total en fotos y renders de{' '}
-            <strong>Envíos DosRuedas</strong>.
+          <p
+            className="mt-4 text-slate-300 text-sm sm:text-base leading-relaxed"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
+            Explora los <strong>68 prompts oficiales</strong> extraídos de la documentación de marca o utiliza la{' '}
+            <span className="text-[#FFEC01] font-medium">Plantilla Maestra R2I</span> con Gemini y Genkit para calibrar
+            nuevos assets con consistencia de personajes, flota y paleta corporativa.
           </p>
-        </header>
-
-        {/* 4 Brand References Banner */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <div className="p-3 rounded-2xl bg-[#04236B]/60 border border-white/10 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#021440] border border-[#FFEC01]/40 flex items-center justify-center text-[#FFEC01] text-xs font-bold">
-              REF 1
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white uppercase" style={{ fontFamily: "'Bebas Neue', cursive" }}>
-                Logo Oficial
-              </p>
-              <p className="text-[11px] text-slate-400">#0636A5 / #FFEC01</p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-[#04236B]/60 border border-white/10 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#021440] border border-[#FFEC01]/40 flex items-center justify-center text-[#FFEC01] text-xs font-bold">
-              REF 2
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white uppercase" style={{ fontFamily: "'Bebas Neue', cursive" }}>
-                Tríptico Personaje
-              </p>
-              <p className="text-[11px] text-slate-400">Rostro & Complexión</p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-[#04236B]/60 border border-white/10 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#021440] border border-[#FFEC01]/40 flex items-center justify-center text-[#FFEC01] text-xs font-bold">
-              REF 3
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white uppercase" style={{ fontFamily: "'Bebas Neue', cursive" }}>
-                Diseño Chaquetas
-              </p>
-              <p className="text-[11px] text-slate-400">Softshell & Cierres</p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-[#04236B]/60 border border-white/10 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#021440] border border-[#FFEC01]/40 flex items-center justify-center text-[#FFEC01] text-xs font-bold">
-              REF 4
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white uppercase" style={{ fontFamily: "'Bebas Neue', cursive" }}>
-                Kit de Uniforme
-              </p>
-              <p className="text-[11px] text-slate-400">Polo Azul & Gorra</p>
-            </div>
-          </div>
         </div>
 
-        {/* Quick Presets Carousel / Badges */}
-        <div className="mb-8">
-          <p className="text-xs text-slate-300 uppercase tracking-widest mb-3 font-semibold flex items-center gap-1.5">
-            <Sliders className="w-3.5 h-3.5 text-[#FFEC01]" />
-            CARGAR EJEMPLO RÁPIDO DESDE LA DOCUMENTACIÓN:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {PRESET_EXAMPLES.map((preset, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handlePresetSelect(preset.data)}
-                className="text-xs px-3.5 py-1.5 rounded-full bg-[#04236B]/70 hover:bg-[#0636A5] border border-white/15 text-slate-200 hover:text-white transition-all text-left flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>{preset.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* ======================================================== */}
+        {/* SECCIÓN 1: EXPLORADOR INTERACTIVO DE PRESETS (~68 ASSETS) */}
+        {/* ======================================================== */}
+        <section className="mb-14">
+          <div className="rounded-3xl bg-[#04236B]/60 backdrop-blur-xl border border-white/15 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            {/* Header del explorador */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-[#FFEC01] uppercase tracking-wider mb-1">
+                  <Compass className="w-4 h-4" />
+                  <span>BIBLIOTECA COMPLETA DE ASSETS DE MARCA</span>
+                </div>
+                <h2
+                  className="text-2xl sm:text-3xl font-black uppercase text-white tracking-wide"
+                  style={{ fontFamily: "'Anton', sans-serif" }}
+                >
+                  EXPLORADOR DE PROMPTS CATALOGADOS
+                </h2>
+              </div>
 
-        {/* Main Grid: Form + Result */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Columna Izquierda: Formulario (Double-Bezel Glass Card) */}
-          <div className="lg:col-span-5 rounded-3xl p-3 bg-[#04236B]/60 backdrop-blur-md border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-            <div className="rounded-2xl bg-gradient-to-b from-[#0636A5]/85 to-[#021440]/95 border border-white/10 p-6">
-              <h2
-                className="text-2xl font-black uppercase text-white tracking-tight mb-4 flex items-center gap-2"
-                style={{ fontFamily: "'Anton', sans-serif" }}
-              >
-                <Wand2 className="w-6 h-6 text-[#FFEC01]" />
-                PARÁMETROS DEL ASSET
-              </h2>
+              {/* Tabs por origen de archivo */}
+              <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-[#021440] border border-white/10">
+                <button
+                  onClick={() => {
+                    setActiveTab('fotos');
+                    setSelectedCategory('all');
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+                    activeTab === 'fotos'
+                      ? 'bg-[#FFEC01] text-[#021440] shadow-md'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                  style={{ fontFamily: "'Bebas Neue', cursive" }}
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>FOTOS WEB (1-21)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveTab('marca');
+                    setSelectedCategory('all');
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+                    activeTab === 'marca'
+                      ? 'bg-[#FFEC01] text-[#021440] shadow-md'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                  style={{ fontFamily: "'Bebas Neue', cursive" }}
+                >
+                  <Box className="w-3.5 h-3.5" />
+                  <span>ASSETS DE MARCA (A1-H1)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveTab('tipografia');
+                    setSelectedCategory('all');
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
+                    activeTab === 'tipografia'
+                      ? 'bg-[#FFEC01] text-[#021440] shadow-md'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                  style={{ fontFamily: "'Bebas Neue', cursive" }}
+                >
+                  <Type className="w-3.5 h-3.5" />
+                  <span>TIPOGRAFÍA 3D (T1-T23)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Barra de Filtros & Búsqueda */}
+            <div className="py-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+              {/* Buscador */}
+              <div className="relative w-full sm:max-w-md">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar por código, título, archivo destino o ubicación UI..."
+                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#021440]/80 border border-white/15 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#FFEC01] transition-all"
+                />
+              </div>
+
+              {/* Selector de Categorías / Píldoras */}
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-medium tracking-wide uppercase transition-all whitespace-nowrap cursor-pointer ${
+                      selectedCategory === cat
+                        ? 'bg-white/20 text-[#FFEC01] border border-[#FFEC01]/40'
+                        : 'bg-white/5 text-slate-400 hover:text-slate-200 border border-transparent'
+                    }`}
+                  >
+                    {cat === 'all' ? 'Todos' : cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid de Cards de Assets */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[560px] overflow-y-auto pr-1">
+              {filteredItems.map((item) => {
+                const isCopied = copiedItemId === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    className="flex flex-col justify-between p-5 rounded-2xl bg-[#021440]/80 border border-white/10 hover:border-[#FFEC01]/50 hover:bg-[#0636A5]/30 transition-all duration-300 shadow-lg group relative"
+                  >
+                    <div>
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="px-2 py-0.5 rounded-md bg-[#FFEC01] text-[#021440] font-black text-xs uppercase"
+                            style={{ fontFamily: "'Anton', sans-serif" }}
+                          >
+                            {item.code}
+                          </span>
+                          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                            {item.category}
+                          </span>
+                        </div>
+
+                        <span
+                          className="text-[10px] text-[#628FF9] font-mono"
+                          style={{ fontFamily: "'Geist Mono', monospace" }}
+                        >
+                          {item.aspectRatio} · {item.resolution}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        className="text-base font-bold text-white uppercase tracking-tight mb-2 group-hover:text-[#FFEC01] transition-colors"
+                        style={{ fontFamily: "'Bebas Neue', cursive" }}
+                      >
+                        {item.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-2 mb-3">{item.description}</p>
+
+                      {/* Destination metadata */}
+                      <div className="p-2 rounded-lg bg-black/30 border border-white/5 mb-4 text-[11px] text-slate-400 space-y-1">
+                        <div className="flex items-center gap-1 truncate">
+                          <MapPin className="w-3 h-3 text-[#FFEC01] shrink-0" />
+                          <span className="truncate text-slate-300">{item.uiDestination}</span>
+                        </div>
+                        <div className="flex items-center gap-1 truncate font-mono text-[10px] text-[#628FF9]">
+                          <FileCode className="w-3 h-3 shrink-0" />
+                          <span className="truncate">{item.targetFile}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dual Action Buttons: Instant Copy + Load into Form */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                      <button
+                        onClick={() => handleInstantCopy(item)}
+                        className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                          isCopied
+                            ? 'bg-[#22c55e] text-white shadow-md'
+                            : 'bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white border border-white/10'
+                        }`}
+                        style={{ fontFamily: "'Bebas Neue', cursive" }}
+                        title="Copiar prompt listo para usar"
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{isCopied ? '¡COPIADO!' : '1-CLIC COPIAR'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleLoadItemToForm(item)}
+                        className="py-2 px-3 rounded-xl bg-[#0636A5] hover:bg-[#FFEC01] text-white hover:text-[#021440] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all border border-[#FFEC01]/30 hover:border-[#FFEC01] cursor-pointer shadow-md"
+                        style={{ fontFamily: "'Bebas Neue', cursive" }}
+                        title="Cargar al formulario para editar con IA"
+                      >
+                        <Wand2 className="w-3.5 h-3.5" />
+                        <span>PERSONALIZAR</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredItems.length === 0 && (
+              <div className="p-8 text-center text-slate-400 text-sm">
+                No se encontraron prompts que coincidan con la búsqueda "{searchQuery}".
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* SECCIÓN 2: WORKBENCH FORMULARIO R2I + GENKIT GEMINI AI  */}
+        {/* ======================================================== */}
+        <div id="r2i-workbench" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Form & Settings */}
+          <div className="lg:col-span-6 space-y-6">
+            <div className="rounded-3xl bg-[#04236B]/60 backdrop-blur-xl border border-white/15 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+              <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 mb-6">
+                <div>
+                  <h3
+                    className="text-2xl font-black uppercase text-white tracking-wide"
+                    style={{ fontFamily: "'Anton', sans-serif" }}
+                  >
+                    CONFIGURADOR DE ASSET (R2I)
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    Ajusta los parámetros y genera con la Plantilla Maestra y Gemini
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-2xl bg-[#021440] border border-[#FFEC01]/30 flex items-center justify-center text-[#FFEC01]">
+                  <Sliders className="w-5 h-5" />
+                </div>
+              </div>
 
               <form onSubmit={handleGenerate} className="space-y-4 text-xs">
                 {/* Asset Type */}
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                    Tipo de Recurso
+                  <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Tipo de Recurso Visual
                   </label>
                   <select
                     value={formData.assetType}
@@ -364,51 +482,71 @@ export default function GeneradorPromptsPage() {
                         assetType: e.target.value as AssetPromptInput['assetType']
                       })
                     }
-                    className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#FFEC01] transition-colors"
+                    className="w-full p-3 rounded-xl bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFEC01] transition-all cursor-pointer font-medium"
                   >
-                    <option value="rider-commercial-photo">📸 Fotografía Comercial de Rider (R2I)</option>
-                    <option value="typography-3d">🔤 Texto Tipográfico 3D Extruido</option>
-                    <option value="3d-packaging-fleet">📦 Paquetería / Flota 3D Render</option>
-                    <option value="isometric-map-hub">🗺️ Mapa / Hub Isométrico 3D</option>
-                    <option value="duotone-icon-set">⚡ Set de Iconos Duotono</option>
-                    <option value="custom">🛠️ Personalizado / Otro</option>
+                    <option value="rider-commercial-photo">📸 Fotografía Comercial de Rider / Escena Urbana</option>
+                    <option value="typography-3d">✨ Tipografía 3D Extruida & Lettering de Marca</option>
+                    <option value="3d-packaging-fleet">📦 Paquetería 3D, Cajas Kraft & Flota de Scooters</option>
+                    <option value="isometric-map-hub">🗺️ Mapa Isométrico de Mar del Plata & Hub Chauvín</option>
+                    <option value="duotone-icon-set">⚡ Set de Iconos Duotono (#0636A5 / #FFEC01)</option>
+                    <option value="custom">🛠️ Personalizado (Custom Asset)</option>
                   </select>
                 </div>
 
-                {/* Subject and Action */}
+                {/* Subject & Action */}
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                    Sujeto y Acción Principal <span className="text-[#FFEC01]">*</span>
+                  <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Sujeto, Objeto y Acción Principal *</span>
+                    <span className="text-[#FFEC01] font-mono text-[11px]">R2I Core</span>
                   </label>
                   <textarea
-                    rows={3}
-                    required
-                    placeholder="Ej: Rider joven en scooter transitando frente al Casino de Mar del Plata con caja kraft en baúl..."
+                    rows={4}
                     value={formData.subjectAndAction}
                     onChange={(e) => setFormData({ ...formData, subjectAndAction: e.target.value })}
-                    className="w-full bg-[#021440]/90 border border-white/15 rounded-xl p-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FFEC01] transition-colors leading-relaxed"
+                    placeholder="Ej: Repartidor en scooter entregando caja kraft con cinta azul a una clienta en la puerta de su casa..."
+                    className="w-full p-3 rounded-xl bg-[#021440] border border-white/15 text-white placeholder-slate-400 focus:outline-none focus:border-[#FFEC01] transition-all text-xs leading-relaxed"
+                    required
                   />
                 </div>
 
-                {/* Location Context */}
+                {/* Setting / Location */}
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                    Ubicación / Contexto en Mar del Plata
+                  <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Entorno & Locación (Mar del Plata)
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: Rambla Casino Central, Chauvín Friuli 1972, Güemes..."
-                    value={formData.locationContext}
-                    onChange={(e) => setFormData({ ...formData, locationContext: e.target.value })}
-                    className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FFEC01] transition-colors"
-                  />
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-[#FFEC01] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={formData.locationContext || ''}
+                      onChange={(e) => setFormData({ ...formData, locationContext: e.target.value })}
+                      placeholder="Ej: Rambla Casino Central, Güemes, Hub Friuli 1972..."
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFEC01] transition-all"
+                    />
+                  </div>
                 </div>
 
-                {/* Aspect Ratio & Camera */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* Two columns: Camera & Aspect Ratio */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                      Aspect Ratio
+                    <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                      Cámara / Motor Render
+                    </label>
+                    <div className="relative">
+                      <Camera className="w-4 h-4 text-[#FFEC01] absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={formData.cameraAndMedium || ''}
+                        onChange={(e) => setFormData({ ...formData, cameraAndMedium: e.target.value })}
+                        placeholder="Ej: Sony A7R IV 35mm f/2..."
+                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFEC01] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                      Relación de Aspecto (--ar)
                     </label>
                     <select
                       value={formData.aspectRatio}
@@ -418,283 +556,192 @@ export default function GeneradorPromptsPage() {
                           aspectRatio: e.target.value as AssetPromptInput['aspectRatio']
                         })
                       }
-                      className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-[#FFEC01] transition-colors"
+                      className="w-full p-2.5 rounded-xl bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFEC01] transition-all cursor-pointer font-mono"
                     >
-                      <option value="16:9">16:9 (Hero / Banners)</option>
-                      <option value="4:3">4:3 (Cards / Bento)</option>
-                      <option value="1:1">1:1 (Cuadrado / Badges)</option>
-                      <option value="3:2">3:2 (3D Textos / Flota)</option>
-                      <option value="4:5">4:5 (Social / Portadas)</option>
+                      <option value="16:9">16:9 (Hero / Banner / Paisaje)</option>
+                      <option value="4:3">4:3 (Tarjetas / Bento Grids)</option>
+                      <option value="1:1">1:1 (Cuadrado / Iconos / 3D)</option>
+                      <option value="3:2">3:2 (Tipografías / Renders 2K)</option>
+                      <option value="4:5">4:5 (Vertical / Retrato)</option>
+                      <option value="9:16">9:16 (Stories / Mobile)</option>
                     </select>
                   </div>
+                </div>
 
+                {/* Two columns: Target File & UI Location */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                      Archivo Destino
+                    <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                      Nombre de Archivo Destino
                     </label>
                     <input
                       type="text"
-                      placeholder="home-hero.webp"
-                      value={formData.targetFile}
+                      value={formData.targetFile || ''}
                       onChange={(e) => setFormData({ ...formData, targetFile: e.target.value })}
-                      className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FFEC01] transition-colors"
+                      placeholder="express-hero-rider.webp"
+                      className="w-full p-2.5 rounded-xl bg-[#021440] border border-white/15 text-white font-mono focus:outline-none focus:border-[#FFEC01] transition-all text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                      Componente UI de Destino
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.uiLocation || ''}
+                      onChange={(e) => setFormData({ ...formData, uiLocation: e.target.value })}
+                      placeholder="ExpressHero.tsx / Hero"
+                      className="w-full p-2.5 rounded-xl bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFEC01] transition-all text-xs"
                     />
                   </div>
                 </div>
 
-                {/* UI Location */}
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                    Componente UI Destino (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: src/components/cotizar/express/ExpressHero.tsx"
-                    value={formData.uiLocation}
-                    onChange={(e) => setFormData({ ...formData, uiLocation: e.target.value })}
-                    className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FFEC01] transition-colors"
-                  />
-                </div>
-
-                {/* Additional Notes */}
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1 uppercase tracking-wider">
-                    Instrucciones Adicionales (Lente, Iluminación)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: Luz dorada de atardecer oceánico, reflejo en asfalto húmedo..."
-                    value={formData.additionalNotes}
-                    onChange={(e) => setFormData({ ...formData, additionalNotes: e.target.value })}
-                    className="w-full bg-[#021440]/90 border border-white/15 rounded-xl px-3.5 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FFEC01] transition-colors"
-                  />
+                {/* Submit Action Button */}
+                <div className="pt-3">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#FFEC01] via-[#FFD700] to-[#FFEC01] text-[#021440] font-black uppercase tracking-wider text-sm shadow-[0_0_25px_rgba(255,236,1,0.3)] hover:shadow-[0_0_35px_rgba(255,236,1,0.5)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: "'Bebas Neue', cursive" }}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>PROCESANDO CON GENKIT & GEMINI AI...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="w-5 h-5" />
+                        <span>GENERAR PROMPT CON PLANTILLA MAESTRA R2I</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 {errorMsg && (
-                  <div className="p-3 rounded-xl bg-red-900/40 border border-red-500/50 text-red-200 text-xs">
+                  <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-xs">
                     {errorMsg}
                   </div>
                 )}
-
-                {/* Submit Nested-Pill Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{ fontFamily: "'Bebas Neue', cursive" }}
-                  className={`group w-full inline-flex items-center justify-between gap-3 rounded-full uppercase tracking-[.05em] font-bold border px-6 py-3 min-h-[50px] transition-all duration-300 active:scale-[.98] cursor-pointer mt-4 ${
-                    loading
-                      ? 'bg-[#04236B] text-slate-400 border-white/20 cursor-wait'
-                      : 'bg-[#FFEC01] text-[#021440] border-[#FFEC01] shadow-[0_0_24px_rgba(255,236,1,0.35)] hover:bg-[#FFF033] hover:shadow-[0_0_40px_rgba(255,236,1,0.55)]'
-                  }`}
-                >
-                  <span className="text-base tracking-wider font-bold">
-                    {loading ? 'GENERANDO PROMPT CON GENKIT...' : 'GENERAR PROMPT CON PLANTILLA MAESTRA'}
-                  </span>
-                  <span className="w-8 h-8 rounded-full flex items-center justify-center bg-[#021440]/15 text-[#021440] group-hover:bg-[#0636A5] group-hover:text-[#FFEC01] group-hover:translate-x-0.5 transition-all duration-200">
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
-                  </span>
-                </button>
               </form>
             </div>
           </div>
 
-          {/* Columna Derecha: Resultado & Desglose Estructurado (Double-Bezel Glass Card) */}
-          <div className="lg:col-span-7 space-y-6">
+          {/* Right Column: Master Output Display */}
+          <div className="lg:col-span-6 space-y-6">
             {!generatedResult && !loading && (
-              <div className="rounded-3xl p-3 bg-[#04236B]/40 backdrop-blur-md border border-white/10 text-center py-16 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-2xl bg-[#021440] border border-white/10 flex items-center justify-center text-[#FFEC01] mb-4">
+              <div className="rounded-3xl bg-[#04236B]/40 backdrop-blur-xl border border-dashed border-white/20 p-8 text-center flex flex-col items-center justify-center min-h-[480px]">
+                <div className="w-16 h-16 rounded-full bg-[#021440] border border-[#FFEC01]/30 flex items-center justify-center text-[#FFEC01] mb-4">
                   <Sparkles className="w-8 h-8" />
                 </div>
                 <h3
-                  className="text-2xl font-black uppercase text-white tracking-tight mb-2"
-                  style={{ fontFamily: "'Anton', sans-serif" }}
+                  className="text-xl font-bold uppercase text-white mb-2"
+                  style={{ fontFamily: "'Bebas Neue', cursive" }}
                 >
-                  MOTOR R2I LISTO PARA GENERAR
+                  ESPERANDO GENERACIÓN DE ASSET
                 </h3>
-                <p className="text-sm text-slate-300 max-w-md">
-                  Elige un ejemplo rápido arriba o completa los campos del formulario para producir un prompt
-                  fotográfico calibrado según las 4 referencias de marca de Envíos DosRuedas.
+                <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+                  Selecciona uno de los 68 presets del explorador o completa el formulario para obtener el prompt
+                  estructurado con las 4 referencias de marca vinculadas.
                 </p>
               </div>
             )}
 
             {loading && (
-              <div className="rounded-3xl p-3 bg-[#04236B]/60 backdrop-blur-md border border-[#FFEC01]/30 text-center py-16 flex flex-col items-center justify-center">
+              <div className="rounded-3xl bg-[#04236B]/40 backdrop-blur-xl border border-white/15 p-8 text-center flex flex-col items-center justify-center min-h-[480px]">
                 <Loader2 className="w-12 h-12 text-[#FFEC01] animate-spin mb-4" />
                 <h3
-                  className="text-2xl font-black uppercase text-white tracking-tight mb-2"
-                  style={{ fontFamily: "'Anton', sans-serif" }}
+                  className="text-xl font-bold uppercase text-[#FFEC01] mb-2"
+                  style={{ fontFamily: "'Bebas Neue', cursive" }}
                 >
-                  CALIBRANDO REFERENCIAS CON GENKIT...
+                  CALIBRANDO REFERENCIAS R2I...
                 </h3>
-                <p className="text-sm text-slate-300 max-w-md">
-                  Gemini 2.5 Flash está aplicando la estructura R2I (Sujeto, Entorno, Óptica, Paleta y Restricciones) a
-                  tu solicitud.
+                <p className="text-xs text-slate-300 max-w-sm leading-relaxed">
+                  Vinculando Logo (#0636A5/#FFEC01), Tríptico de Personaje, Chaquetas Softshell y Uniforme con Gemini.
                 </p>
               </div>
             )}
 
-            {generatedResult && (
-              <div className="rounded-3xl p-3 bg-[#04236B]/60 backdrop-blur-md border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-                <div className="rounded-2xl bg-gradient-to-b from-[#0636A5]/85 to-[#021440]/95 border border-white/10 p-6 space-y-6">
-                  {/* Result Header */}
-                  <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-white/10">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 rounded bg-[#FFEC01] text-[#021440] text-[10px] font-black tracking-wider">
-                          GENERADO CON ÉXITO
-                        </span>
-                        <span
-                          className="text-xs uppercase tracking-widest text-[#FFEC01] font-bold"
-                          style={{ fontFamily: "'Bebas Neue', cursive" }}
-                        >
-                          {generatedResult.parameters.recommendedModel}
-                        </span>
-                      </div>
-                      <h3
-                        className="text-2xl font-black uppercase text-white tracking-tight"
-                        style={{ fontFamily: "'Anton', sans-serif" }}
-                      >
-                        {generatedResult.title}
-                      </h3>
-                    </div>
-
-                    <button
-                      onClick={handleCopyPrompt}
+            {generatedResult && !loading && (
+              <div className="rounded-3xl bg-[#04236B]/80 backdrop-blur-xl border border-[#FFEC01]/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                {/* Card Title */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                  <div>
+                    <span
+                      className="text-xs font-bold uppercase text-[#FFEC01] tracking-wider"
                       style={{ fontFamily: "'Bebas Neue', cursive" }}
-                      className={`inline-flex items-center gap-2 rounded-full uppercase tracking-wider font-bold border px-5 py-2 text-xs transition-all duration-200 cursor-pointer ${
-                        copiedPrompt
-                          ? 'bg-[#22c55e] text-white border-[#22c55e] shadow-[0_0_20px_rgba(34,197,94,0.4)]'
-                          : 'bg-[#FFEC01] text-[#021440] border-[#FFEC01] hover:bg-[#FFF033] shadow-[0_0_20px_rgba(255,236,1,0.3)]'
-                      }`}
                     >
-                      {copiedPrompt ? (
-                        <>
-                          <CheckCircle2 className="w-4 h-4" />
-                          ¡PROMPT COPIADO!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          COPIAR PROMPT
-                        </>
-                      )}
-                    </button>
+                      PROMPT ESTRUCTURADO R2I GENERADO
+                    </span>
+                    <h3
+                      className="text-2xl font-black uppercase text-white"
+                      style={{ fontFamily: "'Anton', sans-serif" }}
+                    >
+                      {generatedResult.title}
+                    </h3>
                   </div>
 
-                  {/* Terminal Box for Final Prompt */}
-                  <div className="rounded-xl bg-[#021440]/95 border border-white/10 p-4">
-                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-[10px] text-slate-400">
-                      <div className="flex items-center gap-1.5">
-                        <Terminal className="w-3.5 h-3.5 text-[#FFEC01]" />
-                        <span style={{ fontFamily: "'Geist Mono', monospace" }}>PROMPT FINAL LISTO PARA IA</span>
-                      </div>
-                      <span className="text-[#FFEC01]" style={{ fontFamily: "'Geist Mono', monospace" }}>
-                        Ratio: {generatedResult.parameters.aspectRatio}
+                  <button
+                    onClick={handleCopyPrompt}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FFEC01] hover:bg-white text-[#021440] text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer self-start sm:self-center"
+                    style={{ fontFamily: "'Bebas Neue', cursive" }}
+                  >
+                    {copiedPrompt ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedPrompt ? '¡COPIADO!' : 'COPIAR PROMPT'}</span>
+                  </button>
+                </div>
+
+                <div className="mt-5 space-y-5">
+                  {/* Full Raw Prompt Box */}
+                  <div className="relative">
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
+                      <span className="font-bold text-slate-300 uppercase">Prompt Completo (Midjourney / Flux / Gemini)</span>
+                      <span
+                        className="text-[#FFEC01] font-mono"
+                        style={{ fontFamily: "'Geist Mono', monospace" }}
+                      >
+                        {generatedResult.parameters.aspectRatio}
                       </span>
                     </div>
 
                     <pre
-                      className="text-slate-100 text-xs leading-relaxed max-h-56 overflow-y-auto whitespace-pre-wrap font-mono p-1 select-all"
+                      className="p-4 rounded-2xl bg-[#021440] border border-white/15 text-xs text-slate-200 leading-relaxed font-mono whitespace-pre-wrap selection:bg-[#FFEC01] selection:text-[#021440] max-h-48 overflow-y-auto"
                       style={{ fontFamily: "'Geist Mono', monospace" }}
                     >
                       <code>{generatedResult.promptText}</code>
                     </pre>
                   </div>
 
-                  {/* 5-Block Breakdown Accordion / Cards */}
+                  {/* 5-Block Breakdown */}
                   <div>
                     <h4
                       className="text-sm font-black uppercase text-[#FFEC01] tracking-wider mb-3 flex items-center gap-1.5"
                       style={{ fontFamily: "'Bebas Neue', cursive" }}
                     >
                       <Layers className="w-4 h-4" />
-                      DESGLOSE ESTRUCTURADO R2I (PLANTILLA MAESTRA)
+                      DESGLOSE ESTRUCTURADO R2I
                     </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      {/* 1. Subject */}
-                      <div className="p-3 rounded-xl bg-[#021440]/70 border border-white/5">
-                        <span className="text-[10px] font-bold text-[#FFEC01] uppercase tracking-wider block mb-1">
-                          1. Sujeto + Referencias Vinculadas
-                        </span>
-                        <p className="text-slate-300 leading-relaxed">
-                          {generatedResult.coreStructure.subjectAndReferences}
-                        </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                      <div className="p-3 rounded-xl bg-[#021440] border border-white/10">
+                        <span className="text-[#FFEC01] font-bold block mb-1">1. Sujeto</span>
+                        <p className="text-slate-300">{generatedResult.coreStructure.subjectAndReferences}</p>
                       </div>
-
-                      {/* 2. Setting */}
-                      <div className="p-3 rounded-xl bg-[#021440]/70 border border-white/5">
-                        <span className="text-[10px] font-bold text-[#FFEC01] uppercase tracking-wider block mb-1">
-                          2. Entorno & Luz Marplatense
-                        </span>
-                        <p className="text-slate-300 leading-relaxed">
-                          {generatedResult.coreStructure.settingContext}
-                        </p>
-                      </div>
-
-                      {/* 3. Style */}
-                      <div className="p-3 rounded-xl bg-[#021440]/70 border border-white/5">
-                        <span className="text-[10px] font-bold text-[#FFEC01] uppercase tracking-wider block mb-1">
-                          3. Óptica, Cámara & Materiales
-                        </span>
-                        <p className="text-slate-300 leading-relaxed">{generatedResult.coreStructure.styleMedium}</p>
-                      </div>
-
-                      {/* 4. Color & Branding */}
-                      <div className="p-3 rounded-xl bg-[#021440]/70 border border-white/5">
-                        <span className="text-[10px] font-bold text-[#FFEC01] uppercase tracking-wider block mb-1">
-                          4. Calibración Cromática (#0636A5 / #FFEC01)
-                        </span>
-                        <p className="text-slate-300 leading-relaxed">
-                          {generatedResult.coreStructure.colorAndBranding}
-                        </p>
+                      <div className="p-3 rounded-xl bg-[#021440] border border-white/10">
+                        <span className="text-[#FFEC01] font-bold block mb-1">2. Entorno</span>
+                        <p className="text-slate-300">{generatedResult.coreStructure.settingContext}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* SEO & File Metadata Box */}
-                  <div className="p-4 rounded-xl bg-[#021440]/60 border border-white/10 space-y-2 text-xs">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <span className="text-slate-400 block text-[10px] uppercase">Texto Alternativo (Alt HTML):</span>
-                        <p className="text-white font-medium italic">{generatedResult.altTextEs}</p>
-                      </div>
-                      <button
-                        onClick={handleCopyAlt}
-                        className="self-start sm:self-center px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[11px] flex items-center gap-1 cursor-pointer"
-                      >
-                        {copiedAlt ? <Check className="w-3 h-3 text-[#22c55e]" /> : <Copy className="w-3 h-3" />}
-                        <span>Copiar Alt</span>
-                      </button>
-                    </div>
-
-                    <div className="pt-2 border-t border-white/5 flex flex-wrap gap-4 text-[11px] text-slate-300">
-                      <div>
-                        <span className="text-slate-400">Archivo recomendado:</span>{' '}
-                        <span className="text-[#FFEC01]" style={{ fontFamily: "'Geist Mono', monospace" }}>
-                          {generatedResult.parameters.suggestedFilename}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400">Resolución:</span>{' '}
-                        <span style={{ fontFamily: "'Geist Mono', monospace" }}>
-                          {generatedResult.parameters.resolutionTarget}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Brand Compliance Checklist */}
-                  <div className="p-3 rounded-xl bg-[#22c55e]/10 border border-[#22c55e]/30 flex items-start gap-2.5 text-xs text-slate-200">
-                    <ShieldCheck className="w-5 h-5 text-[#22c55e] shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-[#22c55e] block font-bold uppercase tracking-wider text-[10px]">
-                        Verificación de Consistencia de Marca
-                      </strong>
-                      <p className="text-slate-300 leading-relaxed">{generatedResult.brandComplianceNotes}</p>
-                    </div>
-                  </div>
+                  {/* Copy Alt Action */}
+                  <button
+                    onClick={handleCopyAlt}
+                    className="flex items-center gap-2 text-[11px] text-slate-400 hover:text-[#FFEC01] transition-colors"
+                  >
+                    {copiedAlt ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedAlt ? 'Alt copiado' : 'Copiar texto Alt (HTML)'}</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -714,7 +761,7 @@ export default function GeneradorPromptsPage() {
               >
                 ENVÍOS DOSRUEDAS · GENERADOR R2I (GENKIT + GEMINI AI)
               </p>
-              <p className="text-slate-400">Sincronizado con docs/BRAND-ASSET-PROMPTS.md e IMAGE-PROMPTS.md</p>
+              <p className="text-slate-400">Sincronizado con docs/BRAND-ASSET-PROMPTS.md, IMAGE-PROMPTS.md y TYPE-ASSET-PROMPTS.md</p>
             </div>
           </div>
 
@@ -724,7 +771,7 @@ export default function GeneradorPromptsPage() {
           >
             <span>BASE MDQ · FRIULI 1972</span>
             <span className="text-[#FFEC01]">●</span>
-            <span>MODEL: GEMINI 2.5 FLASH</span>
+            <span>MODEL: GEMINI 2.5 / MULTI-FALLBACK</span>
           </div>
         </div>
       </div>
