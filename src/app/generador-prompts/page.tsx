@@ -243,7 +243,7 @@ export default function GeneradorPromptsPage() {
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0636A5]/40 hover:bg-[#0636A5]/70 text-[#FFF12E] text-xs font-semibold tracking-wider transition-all border border-[#FFF12E]/30 hover:border-[#FFF12E] cursor-pointer"
             >
               <Type className="w-3.5 h-3.5" />
-              <span>CATÁLOGO T1-T23</span>
+              <span>CATÁLOGO T1-T36</span>
             </Link>
           </div>
 

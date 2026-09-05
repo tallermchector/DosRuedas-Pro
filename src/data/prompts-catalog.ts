@@ -5,7 +5,8 @@ export type PromptCategory =
   | 'Parches & Wordmarks'
   | 'Cifras 3D'
   | 'Embalaje'
-  | 'Social & Status';
+  | 'Social & Status'
+  | 'Hero Sitemap';
 
 export interface PromptItem {
   id: string;
@@ -29,7 +30,13 @@ export interface PromptItem {
     | 'TrendingUp'
     | 'Box'
     | 'CheckCircle2'
-    | 'Hash';
+    | 'Hash'
+    | 'Compass'
+    | 'Calculator'
+    | 'HelpCircle'
+    | 'Share2'
+    | 'Lock'
+    | 'Scale';
   targetFile: string;
   targetComponent: string;
   aspectRatio: '16:9' | '3:2' | '1:1' | '9:16' | '4:3' | '4:5';
