@@ -4,26 +4,34 @@
 
 @layer base {
   :root {
-    --background: 215 47% 14%;
-    --foreground: 0 0% 100%;
-    --card: 215 45% 18%;
-    --card-foreground: 0 0% 100%;
-    --popover: 215 47% 14%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 215 47% 14%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 215 45% 18%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 215 45% 25%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 44 98% 56%;
-    --accent-foreground: 215 47% 14%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 215 45% 25%;
-    --input: 215 45% 25%;
-    --ring: 44 98% 56%;
-    --radius: 0.75rem;
+    /* Zinc-based neutral system — replaces previous HSL values */
+    --background: 240 10% 3.9%;        /* Zinc-950 #09090B */
+    --foreground: 0 0% 98%;            /* Near white */
+    --card: 240 10% 9.4%;              /* Zinc-900 #18181B */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 9.4%;
+    --popover-foreground: 0 0% 98%;
+    
+    /* Brand structure — Egyptian Royal Navy Blue */
+    --primary: 228 83% 34%;            /* #0636A5 */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 228 50% 18%;          /* #052C87 Brand Ink */
+    --secondary-foreground: 0 0% 98%;
+    
+    /* Single accent — Electric Kinetic Yellow (sat < 80%) */
+    --accent: 54 100% 50%;             /* #FFEC01 */
+    --accent-foreground: 228 83% 10%;  /* Dark navy for text on yellow */
+    
+    /* Muted/Subtle */
+    --muted: 240 10% 15.7%;            /* Zinc-800 #27272A */
+    --muted-foreground: 240 5% 44.3%;  /* Zinc-500 #71717A */
+    
+    /* Borders/Rings */
+    --border: 240 10% 15.7%;           /* Zinc-800 */
+    --input: 240 10% 15.7%;
+    --ring: 54 100% 50%;               /* Accent yellow for focus */
+    
+    --radius: 0.75rem;                 /* 12px base */
   }
 }
 
@@ -34,6 +42,80 @@
     min-width: 210mm;
     min-height: 297mm;
   }
+
+  /* Whisper border — subtle structural lines */
+  .border-whisper {
+    border-color: rgba(226, 232, 240, 0.15);
+  }
+
+  /* Restrained glow — focus/active only, max 15% opacity */
+  .focus-glow:focus-visible {
+    box-shadow: 0 0 0 2px #09090B, 0 0 0 4px rgba(255, 236, 1, 0.15);
+  }
+
+  /* Skeletal shimmer loader */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    animation: shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(90deg, #27272A 25%, #3F3F46 50%, #27272A 75%);
+    background-size: 200% 100%;
+  }
+
+  /* Spring transition utility */
+  .spring-transition {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+
+  /* Stagger cascade for lists */
+  .stagger-children > * {
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Perpetual micro-loops */
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .animate-pulse-subtle {
+    animation: pulse-subtle 1.5s ease-in-out infinite;
+  }
+
+  @keyframes float-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+  .animate-float-gentle {
+    animation: float-gentle 3s ease-in-out infinite;
+  }
+
+  /* Tabular numerals for all data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  /* Font utilities */
+  .font-display { font-family: 'Anton', sans-serif; }
+  .font-subheading { font-family: 'Bebas Neue', sans-serif; }
+  .font-body { font-family: 'Outfit', sans-serif; }
+  .font-mono { font-family: 'Geist Mono', monospace; }
 }
 
 @media print {
@@ -75,11 +157,26 @@
   }
 }
 
+/* Font imports — NO Inter, NO Space Grotesk */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Geist+Mono:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap');
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Anton', sans-serif;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
