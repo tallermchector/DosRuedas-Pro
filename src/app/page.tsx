@@ -22,7 +22,7 @@ export default function Home() {
         </header>
 
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {/* Card 1 */}
             <Link href="/exportacion" className="group block h-full">
               <div className="h-full flex flex-col items-center text-center p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#2563eb] hover:bg-white/10 transition-all duration-300 shadow-xl group-hover:shadow-[#2563eb]/20">
@@ -62,8 +62,19 @@ export default function Home() {
                 <div className="p-4 bg-[#021440] border border-[#FFEC01]/30 rounded-full mb-6 group-hover:scale-110 transition-transform">
                   <Sparkles className="w-10 h-10 text-[#FFEC01]" />
                 </div>
-                <h2 className="text-xl font-bold font-headline uppercase mb-3 text-[#FFEC01]">Genkit R2I Engine</h2>
-                <p className="text-slate-300 font-body text-xs">Generador dinámico con Plantilla Maestra.</p>
+                <h2 className="text-xl font-bold font-headline uppercase mb-3 text-[#FFEC01]">Genkit R2I Assets</h2>
+                <p className="text-slate-300 font-body text-xs">Generador visual de imágenes y 3D.</p>
+              </div>
+            </Link>
+
+            {/* Card 5 */}
+            <Link href="/crear_prompts_webs" className="group block h-full">
+              <div className="h-full flex flex-col items-center text-center p-8 rounded-2xl bg-[#0636A5]/80 backdrop-blur-md border-2 border-[#FFF12E] hover:bg-[#0636A5] transition-all duration-300 shadow-2xl group-hover:shadow-[0_0_30px_rgba(255,241,46,0.35)] group-hover:scale-[1.02]">
+                <div className="p-4 bg-[#FFF12E] rounded-full mb-6 group-hover:rotate-12 transition-transform shadow-md">
+                  <Sparkles className="w-10 h-10 text-[#0636A5]" />
+                </div>
+                <h2 className="text-xl font-black font-headline uppercase mb-3 text-[#FFF12E]">Prompts Webs</h2>
+                <p className="text-slate-200 font-body text-xs">Optimización de UI y Secciones con Genkit.</p>
               </div>
             </Link>
           </div>

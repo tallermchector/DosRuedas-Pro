@@ -27,6 +27,79 @@ import { PROMPT_LIBRARY, type PromptLibraryItem } from '@/data/prompt-library';
 import { reviewCatalog, CatalogItem } from '@/lib/reviewCatalog';
 import { generatePromptFromCatalogItem } from '@/lib/prompt-engine';
 
+// ==========================================
+// PROMPT VALIDATION HELPER (Nano Banana 2 Best Practices)
+// ==========================================
+interface PromptValidationResult {
+  wordCount: number;
+  hasExactTextQuotes: boolean;
+  hasCompleteSentences: boolean;
+  hasSubjectFirst: boolean;
+  hasTechnicalDetails: boolean;
+  hasMoodAtmosphere: boolean;
+  hasCompositionGuidance: boolean;
+  score: number; // 0-100
+  issues: string[];
+}
+
+function validateNanoBananaPrompt(prompt: string, assetType: string): PromptValidationResult {
+  const words = prompt.trim().split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
+  
+  // Check for exact text quoting (text in quotes)
+  const hasExactTextQuotes = /"[^"]+"/.test(prompt);
+  
+  // Check for complete sentences (ends with period, not just fragments)
+  const sentences = prompt.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  const hasCompleteSentences = sentences.length >= 2;
+  
+  // Check subject-first (starts with subject description, not keywords)
+  const firstWords = words.slice(0, 10).join(' ').toLowerCase();
+  const keywordStart = /^(a|an|the|professional|courier|text|image|photo|render|illustration)/.test(firstWords);
+  const hasSubjectFirst = keywordStart && !/^(courier|text|photo|render|illustration),/.test(firstWords);
+  
+  // Check for technical details (camera, lens, lighting specs)
+  const technicalKeywords = /\b(f\/\d|mm|lens|camera|sony|canon|nikon|octane|studio|lighting|golden hour|blue hour|three-point|shallow|depth of field|aperture|iso|shutter)\b/i;
+  const hasTechnicalDetails = technicalKeywords.test(prompt);
+  
+  // Check for mood/atmosphere
+  const moodKeywords = /\b(confident|approachable|serene|dynamic|contemplative|warm|optimistic|peaceful|energetic|professional|friendly|dramatic|calm|vibrant)\b/i;
+  const hasMoodAtmosphere = moodKeywords.test(prompt);
+  
+  // Check for composition guidance
+  const compositionKeywords = /\b(rule of thirds|centered|leading lines|foreground|mid-ground|background|three-quarter|straight-on|top-down|wide angle|low angle|high angle|perspective)\b/i;
+  const hasCompositionGuidance = compositionKeywords.test(prompt);
+  
+  // Calculate score
+  let score = 0;
+  if (wordCount >= 50 && wordCount <= 100) score += 25;
+  else if (wordCount >= 30 && wordCount <= 150) score += 15;
+  else if (wordCount > 0) score += 5;
+  
+  if (hasExactTextQuotes) score += 15;
+  if (hasCompleteSentences) score += 15;
+  if (hasSubjectFirst) score += 15;
+  if (hasTechnicalDetails) score += 10;
+  if (hasMoodAtmosphere) score += 10;
+  if (hasCompositionGuidance) score += 10;
+  
+  // Asset-type specific checks
+  if (assetType === 'typography-3d' && !hasExactTextQuotes) {
+    score -= 10; // Typography MUST have exact quotes
+  }
+  
+  const issues: string[] = [];
+  if (wordCount < 30) issues.push('Prompt muy corto (< 30 palabras) - agrega más detalle');
+  if (wordCount > 200) issues.push('Prompt muy largo (> 200 palabras) - simplifica');
+  if (!hasExactTextQuotes && assetType === 'typography-3d') issues.push('Tipografía 3D requiere texto exacto entre comillas');
+  if (!hasCompleteSentences) issues.push('Usa oraciones completas, no listas de palabras clave');
+  if (!hasTechnicalDetails) issues.push('Agrega especificaciones técnicas (lente, iluminación, cámara)');
+  if (!hasMoodAtmosphere) issues.push('Especifica el mood/atmósfera (confident, serene, dynamic, etc.)');
+  if (!hasCompositionGuidance) issues.push('Incluye guía de composición (rule of thirds, centered, etc.)');
+  
+  return { wordCount, hasExactTextQuotes, hasCompleteSentences, hasSubjectFirst, hasTechnicalDetails, hasMoodAtmosphere, hasCompositionGuidance, score: Math.max(0, Math.min(100, score)), issues };
+}
+
 export default function GeneradorPromptsPage() {
   // Main Navigation Mode
   const [mainMode, setMainMode] = useState<'ui-components' | 'visual-assets'>('ui-components');
@@ -93,7 +166,17 @@ export default function GeneradorPromptsPage() {
     aspectRatio: '16:9',
     targetFile: '',
     uiLocation: '',
-    additionalNotes: ''
+    additionalNotes: '',
+    nanoBananaParams: {
+      numImages: 1,
+      seed: undefined,
+      aspectRatio: '16:9',
+      resolution: '1K',
+      outputFormat: 'png',
+      safetyTolerance: 4,
+      limitGenerations: true,
+      enableWebSearch: false
+    }
   });
 
   const [loading, setLoading] = useState(false);
@@ -135,7 +218,17 @@ export default function GeneradorPromptsPage() {
       aspectRatio: item.aspectRatio,
       targetFile: item.targetFile,
       uiLocation: item.uiDestination,
-      additionalNotes: item.additionalNotes || ''
+      additionalNotes: item.additionalNotes || '',
+      nanoBananaParams: item.nanoBananaParams || {
+        numImages: 1,
+        seed: undefined,
+        aspectRatio: item.aspectRatio,
+        resolution: item.resolution as '0.5K' | '1K' | '2K' | '4K',
+        outputFormat: 'png',
+        safetyTolerance: 4,
+        limitGenerations: true,
+        enableWebSearch: false
+      }
     });
 
     const workbenchEl = document.getElementById('r2i-workbench');
@@ -801,6 +894,104 @@ export default function GeneradorPromptsPage() {
                       </div>
                     </div>
 
+                    {/* Nano Banana 2 Advanced Parameters */}
+                    <div className="rounded-xl bg-[#021440]/50 border border-white/10 p-4 space-y-4">
+                      <h4 className="font-bold text-slate-300 uppercase tracking-wider text-xs flex items-center gap-2">
+                        <Sliders className="w-4 h-4 text-[#FFF12E]" />
+                        Parámetros Avanzados Nano Banana 2
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                          <label className="block font-medium text-slate-400 text-xs mb-1">Num. Imágenes</label>
+                          <select
+                            value={formData.nanoBananaParams?.numImages || 1}
+                            onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, numImages: parseInt(e.target.value) } })}
+                            className="w-full p-2 rounded-lg bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFF12E] transition-all text-xs"
+                          >
+                            <option value="1">1 (Producción)</option>
+                            <option value="2">2 (Comparación)</option>
+                            <option value="4">4 (Ideación / Batch)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-slate-400 text-xs mb-1">Resolución</label>
+                          <select
+                            value={formData.nanoBananaParams?.resolution || '1K'}
+                            onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, resolution: e.target.value } })}
+                            className="w-full p-2 rounded-lg bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFF12E] transition-all text-xs"
+                          >
+                            <option value="0.5K">0.5K (Borrador rápido)</option>
+                            <option value="1K">1K (Estándar)</option>
+                            <option value="2K">2K (Alta calidad)</option>
+                            <option value="4K">4K (Final)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-slate-400 text-xs mb-1">Seed (Reproducibilidad)</label>
+                          <input
+                            type="number"
+                            placeholder="Auto (aleatorio)"
+                            min="0"
+                            max="2147483647"
+                            value={formData.nanoBananaParams?.seed || ''}
+                            onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, seed: e.target.value ? parseInt(e.target.value) : undefined } })}
+                            className="w-full p-2 rounded-lg bg-[#021440] border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-[#FFF12E] transition-all text-xs font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-medium text-slate-400 text-xs mb-1">Tolerancia Seguridad</label>
+                          <select
+                            value={formData.nanoBananaParams?.safetyTolerance || 4}
+                            onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, safetyTolerance: parseInt(e.target.value) } })}
+                            className="w-full p-2 rounded-lg bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFF12E] transition-all text-xs"
+                          >
+                            <option value="1">1 (Estricta)</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4 (Equilibrada)</option>
+                            <option value="5">5</option>
+                            <option value="6">6 (Permisiva)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-white/10">
+                        <div>
+                          <label className="block font-medium text-slate-400 text-xs mb-1">Formato Salida</label>
+                          <select
+                            value={formData.nanoBananaParams?.outputFormat || 'png'}
+                            onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, outputFormat: e.target.value } })}
+                            className="w-full p-2 rounded-lg bg-[#021440] border border-white/15 text-white focus:outline-none focus:border-[#FFF12E] transition-all text-xs"
+                          >
+                            <option value="png">PNG (Sin pérdida)</option>
+                            <option value="webp">WebP (Web optimizado)</option>
+                            <option value="jpeg">JPEG (Comprimido)</option>
+                          </select>
+                        </div>
+                        <div className="flex items-end">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.nanoBananaParams?.limitGenerations ?? true}
+                              onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, limitGenerations: e.target.checked } })}
+                              className="w-4 h-4 rounded border-white/30 text-[#FFF12E] bg-[#021440] focus:ring-[#FFF12E] focus:ring-2"
+                            />
+                            <span className="text-xs text-slate-300">Limitar a 1 generación por prompt</span>
+                          </label>
+                        </div>
+                        <div className="flex items-end">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.nanoBananaParams?.enableWebSearch ?? false}
+                              onChange={(e) => setFormData({ ...formData, nanoBananaParams: { ...formData.nanoBananaParams!, enableWebSearch: e.target.checked } })}
+                              className="w-4 h-4 rounded border-white/30 text-[#FFF12E] bg-[#021440] focus:ring-[#FFF12E] focus:ring-2"
+                            />
+                            <span className="text-xs text-slate-300">Búsqueda web (latencia + costo)</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Two columns: Target File & UI Location */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -965,6 +1156,79 @@ export default function GeneradorPromptsPage() {
                             <p className="text-slate-300">{generatedResult.coreStructure.settingContext}</p>
                           </div>
                         </div>
+                      </div>
+
+                      {/* Prompt Quality Validation (Nano Banana 2 Best Practices) */}
+                      <div className="rounded-xl bg-[#021440]/50 border border-white/10 p-4">
+                        <h4 className="text-sm font-black uppercase text-[#FFF12E] tracking-wider mb-3 flex items-center gap-1.5"
+                          style={{ fontFamily: "'Bebas Neue', cursive" }}>
+                          <Activity className="w-4 h-4" />
+                          VALIDACIÓN CALIDAD PROMPT (NANO BANANA 2)
+                        </h4>
+                        {(() => {
+                          const validation = validateNanoBananaPrompt(generatedResult.promptText, formData.assetType);
+                          const scoreColor = validation.score >= 80 ? 'text-[#22c55e]' : validation.score >= 60 ? 'text-[#FFF12E]' : 'text-[#ef4444]';
+                          return (
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-400">Puntuación de Calidad</span>
+                                <span className={`font-black text-lg ${scoreColor}`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                                  {validation.score}/100
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">
+                                <div className={`p-2 rounded-lg ${validation.wordCount >= 50 && validation.wordCount <= 100 ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Palabras</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.wordCount}</div>
+                                  <div className="text-[9px] text-slate-500">Óptimo: 50-100</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasExactTextQuotes ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Comillas Exactas</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasExactTextQuotes ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">{formData.assetType === 'typography-3d' ? 'Requerido' : 'Opcional'}</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasCompleteSentences ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Oraciones Completas</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasCompleteSentences ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">No keywords</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasTechnicalDetails ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Detalles Técnicos</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasTechnicalDetails ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">Lente, luz, cámara</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasMoodAtmosphere ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Mood/Atmósfera</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasMoodAtmosphere ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">Tono emocional</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasCompositionGuidance ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Composición</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasCompositionGuidance ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">Regla de tercios, etc.</div>
+                                </div>
+                                <div className={`p-2 rounded-lg ${validation.hasSubjectFirst ? 'bg-[#22c55e]/20 border-[#22c55e]/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                                  <div className="font-medium text-slate-300">Subject-First</div>
+                                  <div className="font-mono text-lg" style={{ fontFamily: "'Geist Mono', monospace" }}>{validation.hasSubjectFirst ? '✓' : '✗'}</div>
+                                  <div className="text-[9px] text-slate-500">Sujeto primero</div>
+                                </div>
+                              </div>
+                              {validation.issues.length > 0 && (
+                                <div className="pt-2 border-t border-white/10">
+                                  <span className="text-[10px] font-bold text-[#FFF12E]">Mejoras sugeridas:</span>
+                                  <ul className="mt-1.5 space-y-0.5 text-[10px] text-slate-400">
+                                    {validation.issues.map((issue, i) => (
+                                      <li key={i} className="flex items-center gap-1.5">
+                                        <span className="text-[#ef4444">▸</span>
+                                        {issue}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Copy Alt Action */}

@@ -17,9 +17,15 @@ export interface PromptLibraryItem {
   cameraAndMedium: string;
   additionalNotes?: string;
   fullPromptText: string;
+  nanoBananaParams?: {
+    numImages?: number;
+    seed?: number;
+    safetyTolerance?: number;
+    outputFormat?: 'png' | 'jpeg' | 'webp';
+  };
 }
 
-const BRAND_ANCHOR_PHOTO = `Brand anchor: Envíos DosRuedas, a last-mile courier company in Mar del Plata, Argentina. Professional courier strictly matching reference images (Logo #0636A5/#FFEC01, Triptych character sheet, Softshell Jackets, Navy polo shirt with yellow trim and yellow cap); fleet is light-blue delivery scooters with a large square top box. Parcels are plain kraft cardboard boxes. Colour palette: deep blue and electric yellow against the coastal light of Mar del Plata (Atlantic beaches, the Rambla and Casino, tree-lined streets of Chauvín and Güemes). Logo-free surfaces.`;
+const BRAND_ANCHOR_PHOTO = `Brand anchor: Envíos DosRuedas, a last-mile courier company in Mar del Plata, Argentina. Professional courier strictly matching reference images (Logo #0636A5/#FFEC01, Triptych character sheet, Softshell Jackets, Navy polo shirt with yellow trim and yellow cap); fleet is light-blue delivery scooters with a large square top box. Parcels are plain kraft cardboard boxes. Colour palette: deep blue (#0636A5) and electric yellow (#FFEC01) against the coastal light of Mar del Plata (Atlantic beaches, the Rambla and Casino, tree-lined streets of Chauvín and Güemes). Logo-free surfaces.`;
 
 const BRAND_ANCHOR_3D = `Style anchor: glossy 3D render in the Envíos DosRuedas brand look. Materials: light-blue (#0950F6 to #0636A5) glossy plastic and metal, electric-yellow (#FFEC01) accents, plain kraft cardboard, white plastic. Soft studio lighting from the upper left with a gentle rim light, subtle contact shadow, clean pure-white background for cut-out use. Rounded, friendly proportions, slightly toy-like, no text and no logos on surfaces.`;
 
@@ -51,7 +57,8 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Rambla Casino Central, Mar del Plata, Argentina',
     cameraAndMedium: 'Sony A7R IV, 35mm f/2, Kodak Portra 400 tones, golden hour low sun over the ocean',
     additionalNotes: 'Cool blue shadows on pavement, wide tracking shot',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A courier in his late twenties with tanned skin and a short dark beard, wearing the navy polo and yellow cap, rides a light-blue delivery scooter with a square top box along the Rambla of Mar del Plata, the Casino Central's stone facade and the Atlantic horizon behind him. He glances ahead with an easy, confident half-smile, one hand steady on the handlebar, the scooter leaning slightly into a gentle curve. Wide cinematic three-quarter tracking shot from the sidewalk, subject on the left third, long sea-breeze depth toward the right. Golden hour sun low over the ocean camera-right, warm rim light on the helmet and box, cool blue shadows on the pavement. Captured on a Sony A7R IV, 35mm f/2, Kodak Portra 400 tones with lifted shadows, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A courier in his late twenties with tanned skin and a short dark beard, wearing the navy polo and yellow cap, rides a light-blue delivery scooter with a square top box along the Rambla of Mar del Plata, the Casino Central's stone facade and the Atlantic horizon behind him. He glances ahead with an easy, confident half-smile, one hand steady on the handlebar, the scooter leaning slightly into a gentle curve. Wide cinematic three-quarter tracking shot from the sidewalk, subject on the left third, long sea-breeze depth toward the right. Golden hour sun low over the ocean camera-right, warm rim light on the helmet and box, cool blue shadows on the pavement. Captured on a Sony A7R IV, 35mm f/2, Kodak Portra 400 tones with lifted shadows, ultra-realistic, high resolution.`,
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'IMG-2',
@@ -71,7 +78,8 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Mar del Plata, Argentina (Chauvín / Costa)',
     cameraAndMedium: 'DJI Mavic 3, 24mm equivalent lens, long exposure feel with clean detail',
     additionalNotes: 'Blue hour ambient light with sunset glow, street lamps in warm yellow lines',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} An elevated late-dusk view of Mar del Plata from above the Chauvín neighbourhood looking toward the coast: a dense grid of low rooftops and tree-lined avenues rolling down to the curve of the beach and the dark blue Atlantic, the lighthouse and the port silhouettes on the far right. Street lamps and headlights trace the avenues in warm yellow lines, the sky graded from deep navy to a thin orange band at the horizon. Wide establishing shot from a drone at about 120 metres, horizon in the upper third, slight tilt down to show the streets. Blue hour ambient light with the last sun glow, crisp city lights. Shot on a DJI Mavic 3 with a 24mm equivalent lens, long exposure feel with clean detail, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} An elevated late-dusk view of Mar del Plata from above the Chauvín neighbourhood looking toward the coast: a dense grid of low rooftops and tree-lined avenues rolling down to the curve of the beach and the dark blue Atlantic, the lighthouse and the port silhouettes on the far right. Street lamps and headlights trace the avenues in warm yellow lines, the sky graded from deep navy to a thin orange band at the horizon. Wide establishing shot from a drone at about 120 metres, horizon in the upper third, slight tilt down to show the streets. Blue hour ambient light with the last sun glow, crisp city lights. Shot on a DJI Mavic 3 with a 24mm equivalent lens, long exposure feel with clean detail, ultra-realistic, high resolution.`,
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '4:3', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'IMG-3',
@@ -91,7 +99,8 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Calle Güemes, Mar del Plata',
     cameraAndMedium: 'Canon EOS R5, 50mm f/2, natural documentary commercial lighting',
     additionalNotes: 'Shelves with folded garments behind, scooter parked at kerb outside',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A woman in her thirties with curly dark hair and a linen apron, owner of a small clothing shop, hands a stack of three kraft parcels with printed shipping labels to a uniformed courier at her shop doorway; the courier steadies the boxes with both hands and nods. Behind them, wooden shelves with folded garments and a laptop open on the counter; the scooter is parked at the kerb outside, out of focus. Medium shot at eye level, both subjects in the centre-right, doorway framing the exchange. Soft overcast daylight from the street plus warm interior fill, gentle shadows. Canon EOS R5, 50mm f/2, natural documentary colour, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A woman in her thirties with curly dark hair and a linen apron, owner of a small clothing shop, hands a stack of three kraft parcels with printed shipping labels to a uniformed courier at her shop doorway; the courier steadies the boxes with both hands and nods. Behind them, wooden shelves with folded garments and a laptop open on the counter; the scooter is parked at the kerb outside, out of focus. Medium shot at eye level, both subjects in the centre-right, doorway framing the exchange. Soft overcast daylight from the street plus warm interior fill, gentle shadows. Canon EOS R5, 50mm f/2, natural documentary colour, ultra-realistic, high resolution.`,
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '4:3', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'IMG-4',
@@ -111,7 +120,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Taller en Mar del Plata',
     cameraAndMedium: 'Fujifilm X-T5, 35mm f/1.4, clean bright natural window light',
     additionalNotes: 'Square composition, hands and boxes in lower half',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A young man in a grey hoodie seals a kraft box with tape at a workbench in a small home workshop, a neat row of labelled parcels lined up beside him and a printer spitting out another shipping label. Plants, a bulletin board with order notes and a window with soft daylight. Square composition, slightly high angle over the bench, hands and boxes in the lower half, face turned down in concentration. Bright natural window light from the left, clean white balance. Fujifilm X-T5, 35mm f/1.4, crisp everyday-commerce feel, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A young man in a grey hoodie seals a kraft box with tape at a workbench in a small home workshop, a neat row of labelled parcels lined up beside him and a printer spitting out another shipping label. Plants, a bulletin board with order notes and a window with soft daylight. Square composition, slightly high angle over the bench, hands and boxes in the lower half, face turned down in concentration. Bright natural window light from the left, clean white balance. Fujifilm X-T5, 35mm f/1.4, crisp everyday-commerce feel, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-5',
@@ -131,7 +140,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Avenida Luro / Centro, Mar del Plata',
     cameraAndMedium: 'Sony A7 IV, 24-70mm at 35mm f/4, fast shutter, punchy commercial colour',
     additionalNotes: 'Low three-quarter angle from kerb, traffic softly blurred',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A uniformed courier waits on his light-blue scooter at a traffic light on a busy downtown street of Mar del Plata, helmet on, one boot on the ground, checking a phone mounted on the handlebar; the top box is closed and clean. Pedestrians, a bus and old apartment facades with balconies fill the background. Low three-quarter angle from the kerb, scooter and rider filling the left two thirds, motion of traffic softly blurred on the right. Late-morning sun with hard shadows and bright reflections on the paint, deep blue sky. Sony A7 IV, 24-70mm at 35mm f/4, fast shutter, punchy commercial colour, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A uniformed courier waits on his light-blue scooter at a traffic light on a busy downtown street of Mar del Plata, helmet on, one boot on the ground, checking a phone mounted on the handlebar; the top box is closed and clean. Pedestrians, a bus and old apartment facades with balconies fill the background. Low three-quarter angle from the kerb, scooter and rider filling the left two thirds, motion of traffic softly blurred on the right. Late-morning sun with hard shadows and bright reflections on the paint, deep blue sky. Sony A7 IV, 24-70mm at 35mm f/4, fast shutter, punchy commercial colour, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-6',
@@ -151,7 +160,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Escribanía / Oficina Corporativa, Mar del Plata',
     cameraAndMedium: 'Nikon Z8, 85mm f/1.8, shallow depth of field, warm lamp fill',
     additionalNotes: 'Tight medium shot, brass desk lamp softly out of focus',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Close-up of a courier's hand, navy sleeve and yellow cuff visible, handing a sealed white document envelope across a polished wooden reception desk to a receptionist in a blazer who signs a delivery slip on a clipboard. A brass desk lamp, a stack of folders and a framed certificate softly out of focus behind. Tight medium shot from slightly above the desk, the envelope at the centre, shallow depth of field. Warm office lighting from the lamp with cool window fill from the side. Nikon Z8, 85mm f/1.8, restrained corporate palette, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Close-up of a courier's hand, navy sleeve and yellow cuff visible, handing a sealed white document envelope across a polished wooden reception desk to a receptionist in a blazer who signs a delivery slip on a clipboard. A brass desk lamp, a stack of folders and a framed certificate softly out of focus behind. Tight medium shot from slightly above the desk, the envelope at the centre, shallow depth of field. Warm office lighting from the lamp with cool window fill from the side. Nikon Z8, 85mm f/1.8, restrained corporate palette, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-7',
@@ -171,7 +180,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Hub Friuli 1972, Chauvín, Mar del Plata',
     cameraAndMedium: 'Canon EOS R6 II, 24mm f/4, clean logistics documentary look',
     additionalNotes: 'Concrete floor, roll-up door open to daylight, strong one-point perspective',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Inside a compact distribution hub, dozens of kraft parcels are sorted into labelled plastic crates on steel shelving, each crate tagged with a coloured zone card; a courier in the navy polo scans a box with a handheld scanner while another loads a crate onto a hand trolley. Concrete floor, roll-up door open to daylight, a scooter visible outside. Wide shot along the shelving aisle, strong one-point perspective, workers mid-action in the middle distance. Cool fluorescent ceiling light balanced with warm daylight from the door. Canon EOS R6 II, 24mm f/4, clean logistics documentary look, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Inside a compact distribution hub, dozens of kraft parcels are sorted into labelled plastic crates on steel shelving, each crate tagged with a coloured zone card; a courier in the navy polo scans a box with a handheld scanner while another loads a crate onto a hand trolley. Concrete floor, roll-up door open to daylight, a scooter visible outside. Wide shot along the shelving aisle, strong one-point perspective, workers mid-action in the middle distance. Cool fluorescent ceiling light balanced with warm daylight from the door. Canon EOS R6 II, 24mm f/4, clean logistics documentary look, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-8',
@@ -191,7 +200,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Barrio residencial, Mar del Plata',
     cameraAndMedium: 'Sony A7C II, 40mm f/2.5, bright soft daylight',
     additionalNotes: 'Top-down three-quarter angle, box lid open toward camera',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Square close-up of a courier's hands placing the last of four stacked kraft parcels into the open square top box of a light-blue scooter, foam divider visible, yellow cap brim just entering the top of the frame. Parked on a quiet residential street with a hedge and a tiled sidewalk. Top-down three-quarter angle, box lid open toward the camera, parcels filling the lower half. Bright soft daylight, mild shadows. Sony A7C II, 40mm f/2.5, tidy and practical mood, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Square close-up of a courier's hands placing the last of four stacked kraft parcels into the open square top box of a light-blue scooter, foam divider visible, yellow cap brim just entering the top of the frame. Parked on a quiet residential street with a hedge and a tiled sidewalk. Top-down three-quarter angle, box lid open toward the camera, parcels filling the lower half. Bright soft daylight, mild shadows. Sony A7C II, 40mm f/2.5, tidy and practical mood, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-9',
@@ -211,7 +220,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Casa / Taller en Mar del Plata',
     cameraAndMedium: 'Canon EOS R5, 35mm f/2, honest small-business realism',
     additionalNotes: 'Warm afternoon window light with cooler doorway backlight',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A seller in his forties sits at a kitchen table turned packing station, peeling a freshly printed marketplace shipping label onto a kraft box, a laptop with an orders list and a label printer beside him; through the open front door behind him, a uniformed courier with a yellow cap is arriving on foot with an empty crate. Domestic afternoon setting with plants and a coffee mug. Medium-wide shot at table height, seller in the foreground left, courier framed by the doorway on the right. Warm afternoon window light with a cooler doorway backlight. Canon EOS R5, 35mm f/2, honest small-business realism, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A seller in his forties sits at a kitchen table turned packing station, peeling a freshly printed marketplace shipping label onto a kraft box, a laptop with an orders list and a label printer beside him; through the open front door behind him, a uniformed courier with a yellow cap is arriving on foot with an empty crate. Domestic afternoon setting with plants and a coffee mug. Medium-wide shot at table height, seller in the foreground left, courier framed by the doorway on the right. Warm afternoon window light with a cooler doorway backlight. Canon EOS R5, 35mm f/2, honest small-business realism, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-10',
@@ -231,7 +240,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Barrio Chauvín / Los Troncos, Mar del Plata',
     cameraAndMedium: 'Sony A7R IV, 50mm f/1.8, warm optimistic sunset backlight',
     additionalNotes: 'Eye-level medium shot from garden path, gentle lens flare',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A smiling woman in her twenties in a hoodie receives a kraft parcel at the door of a low white house with a small front garden, the courier in navy and yellow holding out the box with both hands and a phone in his other pocket; the scooter waits at the kerb behind a hedge. Eye-level medium shot from the garden path, the handover centred, warm light on the customer's face. Late afternoon sun behind the courier, gentle lens flare, soft shadows. Sony A7R IV, 50mm f/1.8, warm optimistic tones, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A smiling woman in her twenties in a hoodie receives a kraft parcel at the door of a low white house with a small front garden, the courier in navy and yellow holding out the box with both hands and a phone in his other pocket; the scooter waits at the kerb behind a hedge. Eye-level medium shot from the garden path, the handover centred, warm light on the customer's face. Late afternoon sun behind the courier, gentle lens flare, soft shadows. Sony A7R IV, 50mm f/1.8, warm optimistic tones, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-11',
@@ -251,7 +260,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Hub Friuli 1972, Chauvín, Mar del Plata',
     cameraAndMedium: 'Nikon Z8, 24mm f/4, orderly professional atmosphere',
     additionalNotes: 'Epoxy floor, whiteboard with route list, natural light from high windows',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A bright small warehouse interior: three rows of grey steel shelving stocked with labelled kraft boxes and plastic bins, each bin with a printed QR tag; a worker in the navy polo scans a bin with a smartphone and places an item into an open box on a packing bench, tape gun and bubble wrap at hand. Epoxy floor, a whiteboard with a route list, natural light from high windows. Wide shot from the end of the aisle at chest height, worker in the middle ground, shelves converging toward the back wall. Even daylight mixed with cool LED strips. Nikon Z8, 24mm f/4, orderly professional atmosphere, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A bright small warehouse interior: three rows of grey steel shelving stocked with labelled kraft boxes and plastic bins, each bin with a printed QR tag; a worker in the navy polo scans a bin with a smartphone and places an item into an open box on a packing bench, tape gun and bubble wrap at hand. Epoxy floor, a whiteboard with a route list, natural light from high windows. Wide shot from the end of the aisle at chest height, worker in the middle ground, shelves converging toward the back wall. Even daylight mixed with cool LED strips. Nikon Z8, 24mm f/4, orderly professional atmosphere, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-12',
@@ -271,7 +280,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Mostrador Hub Friuli 1972, Mar del Plata',
     cameraAndMedium: 'Fujifilm X-T5, 33mm f/1.4, friendly service mood',
     additionalNotes: 'Yellow and blue wall behind counter, parcels in foreground',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A young entrepreneur with a tote bag sets three kraft parcels on a blue-painted reception counter inside the hub, while a staff member in the navy polo types the intake on a tablet and smiles; a yellow-and-blue wall behind the counter, a rack of outgoing crates to the side. Medium shot across the counter at eye level, parcels in the foreground, both faces in soft focus toward the centre. Warm interior lighting with a cool daylight edge from the entrance. Fujifilm X-T5, 33mm f/1.4, friendly service mood, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A young entrepreneur with a tote bag sets three kraft parcels on a blue-painted reception counter inside the hub, while a staff member in the navy polo types the intake on a tablet and smiles; a yellow-and-blue wall behind the counter, a rack of outgoing crates to the side. Medium shot across the counter at eye level, parcels in the foreground, both faces in soft focus toward the centre. Warm interior lighting with a cool daylight edge from the entrance. Fujifilm X-T5, 33mm f/1.4, friendly service mood, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-13',
@@ -291,7 +300,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Avenida arbolada de Chauvín, Mar del Plata',
     cameraAndMedium: 'Sony A7 IV, 35mm f/1.8, practical tech-meets-street feel',
     additionalNotes: 'Blue top box in foreground, leafy avenue blurred behind',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Over-the-shoulder shot of a courier seated on his scooter, helmet under his arm, looking at a phone that shows a street map with a highlighted route through the city grid, the blue top box and a kraft parcel in the foreground; a leafy avenue of Mar del Plata with a corner café blurred behind. Composition tight on the phone and hands in the lower right, rider's shoulder and cap framing the left. Overcast bright daylight, clean screen reflection. Sony A7 IV, 35mm f/1.8, practical tech-meets-street feel, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Over-the-shoulder shot of a courier seated on his scooter, helmet under his arm, looking at a phone that shows a street map with a highlighted route through the city grid, the blue top box and a kraft parcel in the foreground; a leafy avenue of Mar del Plata with a corner café blurred behind. Composition tight on the phone and hands in the lower right, rider's shoulder and cap framing the left. Overcast bright daylight, clean screen reflection. Sony A7 IV, 35mm f/1.8, practical tech-meets-street feel, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-14',
@@ -311,7 +320,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Oficina Central Friuli 1972, Mar del Plata',
     cameraAndMedium: 'Canon EOS R6 II, 50mm f/2, approachable customer-service tone',
     additionalNotes: 'Window reveals loading bay with scooters outside, cool monitor glow',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A logistics coordinator in his thirties wearing the navy polo sits at a desk in the hub office, headset on, smiling as he types a reply on a phone, a large monitor beside him showing a city map with pins; a window behind reveals the loading bay with two scooters. Medium shot from across the desk, subject slightly right of centre, monitor glow on his face. Cool screen light plus warm desk lamp, daylight from the bay. Canon EOS R6 II, 50mm f/2, approachable customer-service tone, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A logistics coordinator in his thirties wearing the navy polo sits at a desk in the hub office, headset on, smiling as he types a reply on a phone, a large monitor beside him showing a city map with pins; a window behind reveals the loading bay with two scooters. Medium shot from across the desk, subject slightly right of centre, monitor glow on his face. Cool screen light plus warm desk lamp, daylight from the bay. Canon EOS R6 II, 50mm f/2, approachable customer-service tone, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-15',
@@ -331,7 +340,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Frente al Hub Friuli 1972, Chauvín, Mar del Plata',
     cameraAndMedium: 'Sony A7R IV, 35mm f/4, warm team-portrait lighting',
     additionalNotes: 'Soft late-afternoon sun, line of scooters leading diagonally',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Seven couriers of mixed ages and genders in matching navy polos and yellow caps stand relaxed beside a row of six light-blue scooters with square top boxes, parked in front of a low industrial building with a roll-up door on a tree-lined street in Chauvín, Mar del Plata; two of them lean on their bikes, one holds a helmet. Wide group shot at eye level, the line of scooters leading diagonally from the lower left to the group on the right. Soft late-afternoon sun from camera-left, long gentle shadows on the pavement. Sony A7R IV, 35mm f/4, warm team-portrait feel, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Seven couriers of mixed ages and genders in matching navy polos and yellow caps stand relaxed beside a row of six light-blue scooters with square top boxes, parked in front of a low industrial building with a roll-up door on a tree-lined street in Chauvín, Mar del Plata; two of them lean on their bikes, one holds a helmet. Wide group shot at eye level, the line of scooters leading diagonally from the lower left to the group on the right. Soft late-afternoon sun from camera-left, long gentle shadows on the pavement. Sony A7R IV, 35mm f/4, warm team-portrait feel, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-16',
@@ -351,7 +360,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Centro de Mar del Plata (estilo 2019)',
     cameraAndMedium: 'iPhone 11 look at 26mm, muted saturation, gentle film grain',
     additionalNotes: 'Hazy morning light, slightly nostalgic feel',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A single older light-blue scooter with a scuffed square top box parked at the kerb of a downtown street in Mar del Plata, a young courier in a plain navy polo standing beside it holding one kraft parcel and looking hopefully up the street; classic tiled facades and a corner kiosk behind. Medium-wide shot from the sidewalk, slight nostalgic tilt, subject and bike centred. Hazy morning light with muted saturation, slightly faded colour like a 2019 phone photo. iPhone 11 look at 26mm, gentle film grain, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A single older light-blue scooter with a scuffed square top box parked at the kerb of a downtown street in Mar del Plata, a young courier in a plain navy polo standing beside it holding one kraft parcel and looking hopefully up the street; classic tiled facades and a corner kiosk behind. Medium-wide shot from the sidewalk, slight nostalgic tilt, subject and bike centred. Hazy morning light with muted saturation, slightly faded colour like a 2019 phone photo. iPhone 11 look at 26mm, gentle film grain, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-17',
@@ -371,7 +380,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Friuli 1972, Chauvín, Mar del Plata',
     cameraAndMedium: 'Canon EOS R5, 24mm tilt-corrected verticals, clean shadows',
     additionalNotes: 'Plane tree casting shade on sidewalk, deep blue sky',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Exterior of a compact single-storey distribution hub in a residential street of Chauvín: a wide blue roll-up door half open showing crates inside, a yellow band painted along the facade, two scooters parked under a small awning and a plane tree casting shade on the sidewalk. Straight-on architectural shot from across the street, facade centred, sky in the upper quarter. Mid-morning sun from the right, clean shadows, deep blue sky. Canon EOS R5, 24mm tilt-corrected verticals, ultra-realistic, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Exterior of a compact single-storey distribution hub in a residential street of Chauvín: a wide blue roll-up door half open showing crates inside, a yellow band painted along the facade, two scooters parked under a small awning and a plane tree casting shade on the sidewalk. Straight-on architectural shot from across the street, facade centred, sky in the upper quarter. Mid-morning sun from the right, clean shadows, deep blue sky. Canon EOS R5, 24mm tilt-corrected verticals, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-18',
@@ -391,7 +400,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Departamento en Mar del Plata',
     cameraAndMedium: 'Sony A7C II, 55mm f/1.8, warm hallway indoor light',
     additionalNotes: 'Courier yellow cap and navy shoulder visible at edge of frame as he leaves',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A woman in her fifties at her apartment doorway holds a kraft parcel in one arm and her phone in the other hand, reading a delivery confirmation message with a pleased expression; the courier's yellow cap and navy shoulder are visible at the edge of the frame as he turns to leave. Warm hallway with a wooden door and a plant. Medium close-up at eye level, phone and parcel in the lower centre, soft focus on the hallway. Warm indoor light with cool daylight from a stairwell window. Sony A7C II, 55mm f/1.8, reassuring domestic mood, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A woman in her fifties at her apartment doorway holds a kraft parcel in one arm and her phone in the other hand, reading a delivery confirmation message with a pleased expression; the courier's yellow cap and navy shoulder are visible at the edge of the frame as he turns to leave. Warm hallway with a wooden door and a plant. Medium close-up at eye level, phone and parcel in the lower centre, soft focus on the hallway. Warm indoor light with cool daylight from a stairwell window. Sony A7C II, 55mm f/1.8, reassuring domestic mood, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-19',
@@ -411,7 +420,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Paseo Jesús de Galíndez / Torreón del Monje, Mar del Plata',
     cameraAndMedium: 'iPhone 15 Pro front camera look, high-key bright midday sun',
     additionalNotes: 'Kraft parcel peeking from open top box, vivid social-media colour',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} Square phone selfie of a cheerful courier in the navy polo and yellow cap, helmet pushed back, giving a thumbs-up in front of his scooter on the coastal road with the sea, the Torreón del Monje and a bright blue sky behind him; a kraft parcel peeks from the open top box. Arm's-length angle slightly above eye level, face on the left third, scenery filling the right. Bright midday sun, high-key exposure, natural skin. iPhone 15 Pro front camera look, vivid social-media colour, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} Square phone selfie of a cheerful courier in the navy polo and yellow cap, helmet pushed back, giving a thumbs-up in front of his scooter on the coastal road with the sea, the Torreón del Monje and a bright blue sky behind him; a kraft parcel peeks from the open top box. Arm's-length angle slightly above eye level, face on the left third, scenery filling the right. Bright midday sun, high-key exposure, natural skin. iPhone 15 Pro front camera look, vivid social-media colour, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-20',
@@ -431,7 +440,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Escritorio corporativo',
     cameraAndMedium: 'Canon EOS R5, 50mm macro f/5.6, even diffused daylight',
     additionalNotes: 'Generous negative space on left third for text overlay',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A calm flat-lay on a deep blue desk surface: a printed contract with a signature line, a black pen, a small kraft parcel with a blank white label, a yellow sticky note and a rubber stamp arranged with generous negative space on the left third for text overlay. Straight top-down composition, objects clustered on the right, soft shadows. Even diffused daylight from the upper left, no glare. Canon EOS R5, 50mm macro f/5.6, minimal corporate still life, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A calm flat-lay on a deep blue desk surface: a printed contract with a signature line, a black pen, a small kraft parcel with a blank white label, a yellow sticky note and a rubber stamp arranged with generous negative space on the left third for text overlay. Straight top-down composition, objects clustered on the right, soft shadows. Even diffused daylight from the upper left, no glare. Canon EOS R5, 50mm macro f/5.6, minimal corporate still life, ultra-realistic, high resolution. `
   },
   {
     id: 'IMG-21',
@@ -451,7 +460,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     locationContext: 'Avenida Costera, Mar del Plata',
     cameraAndMedium: 'Sony A7R IV, 24mm f/5.6, bold advertising saturated colors',
     additionalNotes: 'Strong diagonal of the road, clear midday Atlantic light',
-    fullPromptText: `${BRAND_ANCHOR_PHOTO} A uniformed courier on a light-blue scooter with a square top box rides toward the camera along a bright coastal avenue of Mar del Plata, palm trees and the sea on the right, the left half of the frame kept as clean deep-blue sky and road for a text overlay. Low wide-angle three-quarter shot, rider on the right third, strong diagonal of the road. Clear midday light, saturated blue and yellow accents, sharp detail on the rider. Sony A7R IV, 24mm f/5.6, bold advertising look, ultra-realistic, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_PHOTO} A uniformed courier on a light-blue scooter with a square top box rides toward the camera along a bright coastal avenue of Mar del Plata, palm trees and the sea on the right, the left half of the frame kept as clean deep-blue sky and road for a text overlay. Low wide-angle three-quarter shot, rider on the right third, strong diagonal of the road. Clear midday light, saturated blue and yellow accents, sharp detail on the rider. Sony A7R IV, 24mm f/5.6, bold advertising look, ultra-realistic, high resolution. `
   },
 
   // ==========================================
@@ -474,7 +483,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Single closed kraft cardboard shipping box sealed with glossy brand-blue tape across top seam and small blank white label on front face.',
     locationContext: 'Pure white studio background for cut-out',
     cameraAndMedium: 'Octane-style 3D render, soft upper-left studio light with faint yellow rim',
-    fullPromptText: `${BRAND_ANCHOR_3D} A single closed kraft cardboard shipping box, medium size, sealed with a strip of glossy brand-blue packing tape across the top seam and a small blank white label on the front face, sitting slightly rotated at a three-quarter angle. Clean product-render composition, box centred with breathing room, soft contact shadow underneath. Upper-left soft studio light, faint yellow rim light on the right edge. Octane-style render, ultra-realistic materials, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A single closed kraft cardboard shipping box, medium size, sealed with a strip of glossy brand-blue packing tape across the top seam and a small blank white label on the front face, sitting slightly rotated at a three-quarter angle. Clean product-render composition, box centred with breathing room, soft contact shadow underneath. Upper-left soft studio light, faint yellow rim light on the right edge. Octane-style render, ultra-realistic materials, high resolution. `
   },
   {
     id: 'BRD-A2',
@@ -493,7 +502,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Open kraft shipping box from high three-quarter angle, flaps folded outward, wrapped bundle with yellow ribbon and crinkled paper inside.',
     locationContext: 'Pure white studio background',
     cameraAndMedium: 'Glossy 3D render, soft upper-left studio light with gentle blue bounce',
-    fullPromptText: `${BRAND_ANCHOR_3D} An open kraft shipping box seen from a high three-quarter angle, flaps folded outward, inside a bundle wrapped in white tissue paper tied with a thin yellow ribbon and a cushion of crinkled kraft paper; a small blank white packing slip rests on top. Box centred, flaps creating a friendly star shape. Soft upper-left studio light with a gentle blue bounce. Glossy 3D render, ultra-realistic materials, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} An open kraft shipping box seen from a high three-quarter angle, flaps folded outward, inside a bundle wrapped in white tissue paper tied with a thin yellow ribbon and a cushion of crinkled kraft paper; a small blank white packing slip rests on top. Box centred, flaps creating a friendly star shape. Soft upper-left studio light with a gentle blue bounce. Glossy 3D render, ultra-realistic materials, high resolution. `
   },
   {
     id: 'BRD-A3',
@@ -512,7 +521,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Three kraft cardboard boxes of decreasing size stacked slightly offset, middle one wrapped with brand-blue tape and top one with yellow tape.',
     locationContext: 'Pure white studio background',
     cameraAndMedium: 'Glossy 3D render, upper-left studio light with subtle yellow rim',
-    fullPromptText: `${BRAND_ANCHOR_3D} Three kraft cardboard boxes of decreasing size stacked slightly offset, the middle one wrapped with a band of brand-blue tape and the top one with a yellow tape band, each with a tiny blank white label. Three-quarter view from slightly above, stack centred, soft contact shadow. Upper-left studio light with a subtle yellow rim. Glossy 3D render, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} Three kraft cardboard boxes of decreasing size stacked slightly offset, the middle one wrapped with a band of brand-blue tape and the top one with a yellow tape band, each with a tiny blank white label. Three-quarter view from slightly above, stack centred, soft contact shadow. Upper-left studio light with a subtle yellow rim. Glossy 3D render, ultra-realistic, high resolution. `
   },
   {
     id: 'BRD-A4',
@@ -531,7 +540,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Crisp white document envelope with brand-blue flap and small circular yellow wax-style seal, thin sheet peeking out.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Glossy 3D render, soft studio lighting from upper-left',
-    fullPromptText: `${BRAND_ANCHOR_3D} A crisp white document envelope with a brand-blue flap and a small circular yellow wax-style seal, a thin sheet of paper peeking out by a few millimetres, resting at a slight angle on a white surface. Floating product-shot composition, envelope centred, soft shadow. Soft studio lighting from the upper left. Glossy 3D render, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A crisp white document envelope with a brand-blue flap and a small circular yellow wax-style seal, a thin sheet of paper peeking out by a few millimetres, resting at a slight angle on a white surface. Floating product-shot composition, envelope centred, soft shadow. Soft studio lighting from the upper left. Glossy 3D render, ultra-realistic, high resolution. `
   },
   {
     id: 'BRD-A5',
@@ -550,7 +559,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Matte light-blue poly mailer bag with brand-blue adhesive strip, white shipping label carrying large black QR code and yellow corner mark.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Glossy 3D render, upper-left studio light with yellow rim',
-    fullPromptText: `${BRAND_ANCHOR_3D} A matte light-blue poly mailer bag with a brand-blue adhesive strip, a white shipping label on the front carrying a large black QR square and a yellow corner mark, bag slightly puffed as if it holds clothing. Straight three-quarter view, bag centred, soft contact shadow. Upper-left studio light with a yellow rim. Glossy 3D render, ultra-realistic, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A matte light-blue poly mailer bag with a brand-blue adhesive strip, a white shipping label on the front carrying a large black QR square and a yellow corner mark, bag slightly puffed as if it holds clothing. Straight three-quarter view, bag centred, soft contact shadow. Upper-left studio light with a yellow rim. Glossy 3D render, ultra-realistic, high resolution. `
   },
   {
     id: 'BRD-B1',
@@ -569,7 +578,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Light-blue delivery scooter with large square top box, seen from front three-quarter angle, yellow accents on mirrors and box edges.',
     locationContext: 'Pure white studio background',
     cameraAndMedium: 'Glossy toy-like 3D render, upper-left soft studio light, yellow rim on right',
-    fullPromptText: `${BRAND_ANCHOR_3D} A light-blue delivery scooter with a large square top box, seen from a front three-quarter angle, round headlight, yellow accents on the mirrors and the box edges, black tyres with a subtle tread, kickstand down. Vehicle centred on white, soft contact shadow, slight low angle to feel sturdy. Upper-left soft studio light, yellow rim on the right. Glossy toy-like 3D render, ultra-realistic materials, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A light-blue delivery scooter with a large square top box, seen from a front three-quarter angle, round headlight, yellow accents on the mirrors and the box edges, black tyres with a subtle tread, kickstand down. Vehicle centred on white, soft contact shadow, slight low angle to feel sturdy. Upper-left soft studio light, yellow rim on the right. Glossy toy-like 3D render, ultra-realistic materials, high resolution. `
   },
   {
     id: 'BRD-B2',
@@ -588,7 +597,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Light-blue delivery scooter with square top box in exact side profile facing right, yellow accent stripe along side panel.',
     locationContext: 'Pure white background with breathing space ahead',
     cameraAndMedium: 'Glossy 3D render, even soft studio light',
-    fullPromptText: `${BRAND_ANCHOR_3D} The same light-blue delivery scooter with square top box in exact side profile, facing right, wheels aligned on one ground line, yellow accent stripe along the side panel, box lid closed. Wide 3:2 composition, scooter centred with empty white space ahead of it for motion. Even soft studio light, faint shadow. Glossy 3D render, ultra-realistic, high resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} The same light-blue delivery scooter with square top box in exact side profile, facing right, wheels aligned on one ground line, yellow accent stripe along the side panel, box lid closed. Wide 3:2 composition, scooter centred with empty white space ahead of it for motion. Even soft studio light, faint shadow. Glossy 3D render, ultra-realistic, high resolution. `
   },
   {
     id: 'BRD-B3',
@@ -607,7 +616,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Friendly stylised 3D character courier with simplified proportions, navy polo (#0636A5), yellow cap, holding kraft box and smiling.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Clay-like glossy 3D render, upper-left soft studio light with warm face bounce',
-    fullPromptText: `${BRAND_ANCHOR_3D} A friendly stylised 3D character of a courier, simplified proportions with a large head and small body, navy polo (#0636A5), yellow cap, dark jeans and sneakers, holding a kraft box with both hands and smiling, standing in a relaxed pose. Full body centred on white, soft contact shadow. Upper-left soft studio light with a warm bounce on the face. Clay-like glossy 3D render, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A friendly stylised 3D character of a courier, simplified proportions with a large head and small body, navy polo (#0636A5), yellow cap, dark jeans and sneakers, holding a kraft box with both hands and smiling, standing in a relaxed pose. Full body centred on white, soft contact shadow. Upper-left soft studio light with a warm bounce on the face. Clay-like glossy 3D render, high resolution. `
   },
   {
     id: 'BRD-B4',
@@ -626,7 +635,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Compact light-blue delivery van with yellow stripe along lower body and white roof, sliding door closed, seen from rear three-quarter angle.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Glossy toy-like 3D render, upper-left soft studio light with yellow rim',
-    fullPromptText: `${BRAND_ANCHOR_3D} A compact light-blue delivery van with a yellow stripe along the lower body and a white roof, sliding side door closed, seen from a rear three-quarter angle showing the cargo doors, black tyres, soft rounded body. Wide 3:2 composition, van centred, soft contact shadow. Upper-left soft studio light, yellow rim. Glossy toy-like 3D render, ultra-realistic materials, high resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A compact light-blue delivery van with a yellow stripe along the lower body and a white roof, sliding side door closed, seen from a rear three-quarter angle showing the cargo doors, black tyres, soft rounded body. Wide 3:2 composition, van centred, soft contact shadow. Upper-left soft studio light, yellow rim. Glossy toy-like 3D render, ultra-realistic materials, high resolution. `
   },
   {
     id: 'BRD-C1',
@@ -645,7 +654,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Isometric city tile of Mar del Plata: grid of pale-blue blocks with curved coastline, sea on right, hub marker in centre-left with 5 concentric rings expanding outwards.',
     locationContext: 'Mar del Plata Isométrico',
     cameraAndMedium: 'Clean isometric 3D render, true 30-degree angle, even daylight',
-    fullPromptText: `${BRAND_ANCHOR_ISO} An isometric city tile of Mar del Plata: a grid of pale-blue blocks with a curved coastline and the sea on the right, a small port and lighthouse at the bottom right, a hub marker in the centre-left. Five concentric translucent rings in graded blues expand from the hub across the blocks, the innermost ring tinted yellow, the outermost fading out toward the periphery. Square composition, tile floating on white with a soft drop shadow. Even soft daylight from the upper left. Clean isometric 3D render, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ISO} An isometric city tile of Mar del Plata: a grid of pale-blue blocks with a curved coastline and the sea on the right, a small port and lighthouse at the bottom right, a hub marker in the centre-left. Five concentric translucent rings in graded blues expand from the hub across the blocks, the innermost ring tinted yellow, the outermost fading out toward the periphery. Square composition, tile floating on white with a soft drop shadow. Even soft daylight from the upper left. Clean isometric 3D render, high resolution. `
   },
   {
     id: 'BRD-C2',
@@ -664,7 +673,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Rectangular isometric neighbourhood tile with pale-blue blocks, glowing yellow route line from blue pin to yellow pin with tiny scooter traveling along it.',
     locationContext: 'Tile Isométrico flotante',
     cameraAndMedium: 'Clean isometric 3D render, 30° angle, soft upper-left light',
-    fullPromptText: `${BRAND_ANCHOR_ISO} A rectangular isometric neighbourhood tile with pale-blue blocks and white streets; a glowing yellow route line with rounded corners runs from a blue pin at the lower left to a yellow pin at the upper right, a tiny light-blue scooter travelling along it halfway. Small trees and a plaza add texture. 4:3 composition, tile floating on white with a soft shadow. Soft upper-left light. Clean isometric 3D render, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ISO} A rectangular isometric neighbourhood tile with pale-blue blocks and white streets; a glowing yellow route line with rounded corners runs from a blue pin at the lower left to a yellow pin at the upper right, a tiny light-blue scooter travelling along it halfway. Small trees and a plaza add texture. 4:3 composition, tile floating on white with a soft shadow. Soft upper-left light. Clean isometric 3D render, high resolution. `
   },
   {
     id: 'BRD-C3',
@@ -683,7 +692,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Single glossy brand-blue map pin with yellow inner circle floating above small white circular base with soft ripple.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Glossy 3D render, upper-left studio light, bright yellow highlight',
-    fullPromptText: `${BRAND_ANCHOR_3D} A single glossy brand-blue map pin with a yellow inner circle, floating slightly above a small white circular base with a soft ripple, viewed from a front three-quarter angle. Centred on white, soft shadow below. Upper-left studio light, bright yellow highlight on the sphere. Glossy 3D render, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A single glossy brand-blue map pin with a yellow inner circle, floating slightly above a small white circular base with a soft ripple, viewed from a front three-quarter angle. Centred on white, soft shadow below. Upper-left studio light, bright yellow highlight on the sphere. Glossy 3D render, high resolution. `
   },
   {
     id: 'BRD-C4',
@@ -702,7 +711,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Circular radar disc seen from above at slight tilt: concentric thin blue rings, translucent yellow sweep wedge rotating with 3 blue dots lit inside.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Clean 3D render, faint glow on sweep',
-    fullPromptText: `${BRAND_ANCHOR_3D} A circular radar disc seen from above at a slight tilt: concentric thin blue rings on a pale-blue face, a translucent yellow sweep wedge rotating from the centre, three small blue dots lit inside the sweep, a subtle grid. Centred on white with a soft shadow. Soft studio light, faint glow on the sweep. Clean 3D render, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A circular radar disc seen from above at a slight tilt: concentric thin blue rings on a pale-blue face, a translucent yellow sweep wedge rotating from the centre, three small blue dots lit inside the sweep, a subtle grid. Centred on white with a soft shadow. Soft studio light, faint glow on the sweep. Clean 3D render, high resolution. `
   },
   {
     id: 'BRD-D1',
@@ -721,7 +730,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Sheet of 12 icons arranged in 4x3 grid: scooter, stopwatch, box stack, shopping bag, warehouse, map pin, QR, bubble phone, banknote, shield, raincloud, calendar clock.',
     locationContext: 'Pure white background, 24px grid',
     cameraAndMedium: 'Vector-style duotone line icons with 2.5px rounded stroke in #0636A5 and single #FFEC01 accent',
-    fullPromptText: `${BRAND_ANCHOR_ICONS} A sheet of twelve icons arranged in a 4 by 3 grid with equal spacing: a delivery scooter, a stopwatch, a stack of two boxes, a shopping bag with a tag, a warehouse with shelves, a map pin over a route, a QR code, a speech bubble with a phone handset, a banknote with a coin, a shield with a check, a raincloud with drops, a calendar with a clock. Each icon has one yellow filled accent (a wheel, a hand of the clock, a tag, a drop). Pure-white background, no text, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ICONS} A sheet of twelve icons arranged in a 4 by 3 grid with equal spacing: a delivery scooter, a stopwatch, a stack of two boxes, a shopping bag with a tag, a warehouse with shelves, a map pin over a route, a QR code, a speech bubble with a phone handset, a banknote with a coin, a shield with a check, a raincloud with drops, a calendar with a clock. Each icon has one yellow filled accent (a wheel, a hand of the clock, a tag, a drop). Pure-white background, no text, high resolution. `
   },
   {
     id: 'BRD-D2',
@@ -740,7 +749,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Sheet of 12 icons in 4x3 grid: hand receiving box, doorbell, parcel on scale, ruler beside box, truck at loading dock, signed clipboard, return arrow, invoice check, padlock parcel, sun clock, moon clock, hand trolley.',
     locationContext: 'Pure white background, 24px grid',
     cameraAndMedium: 'Vector-style duotone line icons, single yellow accent per icon',
-    fullPromptText: `${BRAND_ANCHOR_ICONS} A sheet of twelve icons in a 4 by 3 grid: a hand receiving a box, a doorbell, a package on a scale, a ruler beside a box, a truck at a loading dock, a signed clipboard, a return arrow around a box, an invoice with a check, a padlock over a parcel, a sun with a clock, a moon with a clock, a hand trolley with crates. One yellow filled accent per icon, consistent stroke, pure-white background, no text, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ICONS} A sheet of twelve icons in a 4 by 3 grid: a hand receiving a box, a doorbell, a package on a scale, a ruler beside a box, a truck at a loading dock, a signed clipboard, a return arrow around a box, an invoice with a check, a padlock over a parcel, a sun with a clock, a moon with a clock, a hand trolley with crates. One yellow filled accent per icon, consistent stroke, pure-white background, no text, high resolution. `
   },
   {
     id: 'BRD-F1',
@@ -759,7 +768,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Single-storey isometric warehouse building on small city block: blue roll-up door half open, yellow band on facade, flat roof with 2 skylights, 3 scooters parked.',
     locationContext: 'Friuli 1972, Chauvín, Mar del Plata',
     cameraAndMedium: 'Clean isometric 3D render, soft upper-left daylight',
-    fullPromptText: `${BRAND_ANCHOR_ISO} A single-storey isometric warehouse building on a small block: blue roll-up door half open, a yellow band along the facade, a flat roof with two skylights, three light-blue scooters parked in the front yard, a plane tree on the sidewalk, a tiny loading ramp with crates. 4:3 composition, block floating on white with a soft shadow. Soft upper-left daylight. Clean isometric 3D render, high resolution. --ar 4:3 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ISO} A single-storey isometric warehouse building on a small block: blue roll-up door half open, a yellow band along the facade, a flat roof with two skylights, three light-blue scooters parked in the front yard, a plane tree on the sidewalk, a tiny loading ramp with crates. 4:3 composition, block floating on white with a soft shadow. Soft upper-left daylight. Clean isometric 3D render, high resolution. `
   },
   {
     id: 'BRD-F2',
@@ -778,7 +787,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Wide isometric scene with 4 connected stations on floating white platform: reception counter, tall shelving, packing bench with worker, loading area with scooter.',
     locationContext: 'Floating isometric platform',
     cameraAndMedium: 'Clean isometric 3D render, soft daylight, dotted yellow flow path',
-    fullPromptText: `${BRAND_ANCHOR_ISO} A wide isometric scene with four connected stations left to right on a floating white platform: a reception counter with incoming boxes, tall shelving with labelled bins, a packing bench with a worker figure scanning a bin, and a loading area where a light-blue scooter waits with its box open; a dotted yellow path links the four stations. 16:9 composition, generous white margins. Soft upper-left daylight. Clean isometric 3D render, no text, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_ISO} A wide isometric scene with four connected stations left to right on a floating white platform: a reception counter with incoming boxes, tall shelving with labelled bins, a packing bench with a worker figure scanning a bin, and a loading area where a light-blue scooter waits with its box open; a dotted yellow path links the four stations. 16:9 composition, generous white margins. Soft upper-left daylight. Clean isometric 3D render, no text, high resolution. `
   },
   {
     id: 'BRD-H1',
@@ -797,7 +806,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: 'Light-blue 3D smartphone standing at slight angle showing simplified chat interface with alternating white and light-green bubbles, small map thumbnail.',
     locationContext: 'Pure white background',
     cameraAndMedium: 'Glossy 3D render, upper-left studio light with gentle screen glow',
-    fullPromptText: `${BRAND_ANCHOR_3D} A light-blue 3D smartphone standing at a slight angle, its screen showing a simplified chat interface with alternating white and light-green message bubbles and a small blue map thumbnail in one bubble, with a yellow notification dot on the corner; a tiny kraft box rests beside the phone. Centred on white, soft contact shadow. Upper-left studio light with a gentle screen glow. Glossy 3D render, no readable text, high resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${BRAND_ANCHOR_3D} A light-blue 3D smartphone standing at a slight angle, its screen showing a simplified chat interface with alternating white and light-green message bubbles and a small blue map thumbnail in one bubble, with a yellow notification dot on the corner; a tiny kraft box rests beside the phone. Centred on white, soft contact shadow. Upper-left studio light with a gentle screen glow. Glossy 3D render, no readable text, high resolution. `
   },
 
   // ==========================================
@@ -820,7 +829,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"ENVÍOS EXPRESS"',
     locationContext: 'Pure white ground with soft contact shadow and faint yellow reflection',
     cameraAndMedium: 'Chunky 3D extruded lettering in Anton font style, Octane render',
-    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS EXPRESS" as chunky 3D extruded lettering in heavy Anton font style. Glossy polished electric kinetic yellow (#FFEC01) front faces with clean linear specular highlights. The lateral extrusion, extending one letter-height deep, is rendered in rich Egyptian royal navy blue (#0636A5) with smooth ambient occlusion shading. Framed at a dynamic three-quarter perspective angle from the left to showcase extrusion depth. Resting on a seamless pure white studio ground (#FFFFFF) with a soft ambient contact shadow and a faint yellow specular ground reflection. Upper-left directional key light casting crisp edge bevel highlights. High-end PBR materials, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS EXPRESS" as chunky 3D extruded lettering in heavy Anton font style. Glossy polished electric kinetic yellow (#FFEC01) front faces with clean linear specular highlights. The lateral extrusion, extending one letter-height deep, is rendered in rich Egyptian royal navy blue (#0636A5) with smooth ambient occlusion shading. Framed at a dynamic three-quarter perspective angle from the left to showcase extrusion depth. Resting on a seamless pure white studio ground (#FFFFFF) with a soft ambient contact shadow and a faint yellow specular ground reflection. Upper-left directional key light casting crisp edge bevel highlights. High-end PBR materials, strict 3-color brand compliance, 8k resolution. `
   },
   {
     id: 'TYP-T2',
@@ -839,7 +848,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"ENVÍOS LOWCOST"',
     locationContext: 'Pure white studio ground with soft contact shadow',
     cameraAndMedium: 'Chunky 3D extruded lettering, Octane render style',
-    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS LOWCOST" as chunky 3D extruded lettering in heavy Anton display font style. Smooth matte pure-white front faces (#FFFFFF), outlined by a thin, sharp perimeter border in glossy electric kinetic yellow (#FFEC01). The lateral extrusion, extending one letter-height deep, is rendered in solid Egyptian royal navy blue (#0636A5). Framed at a dynamic three-quarter perspective angle from the left, resting on a pure white studio ground (#FFFFFF) with a soft contact shadow beneath. Soft directional key light from the upper-left casting clean edge highlights. Octane render style, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS LOWCOST" as chunky 3D extruded lettering in heavy Anton display font style. Smooth matte pure-white front faces (#FFFFFF), outlined by a thin, sharp perimeter border in glossy electric kinetic yellow (#FFEC01). The lateral extrusion, extending one letter-height deep, is rendered in solid Egyptian royal navy blue (#0636A5). Framed at a dynamic three-quarter perspective angle from the left, resting on a pure white studio ground (#FFFFFF) with a soft contact shadow beneath. Soft directional key light from the upper-left casting clean edge highlights. Octane render style, strict 3-color brand compliance, 8k resolution. `
   },
   {
     id: 'TYP-T3',
@@ -858,7 +867,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"ENVÍOS FLEX"',
     locationContext: 'Seamless pure white ground with soft drop shadow',
     cameraAndMedium: '3D extruded Anton lettering with electric yellow lightning bolt mark after X',
-    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS FLEX" as chunky 3D extruded lettering in Anton font style. Glossy deep royal navy blue front faces (#0636A5) with a vibrant kinetic yellow lateral extrusion (#FFEC01). A stylized electric yellow lightning bolt mark (#FFEC01) sits dynamically immediately after the last letter 'X'. Framed at a three-quarter perspective angle on a seamless pure white ground (#FFFFFF) with a soft contact drop shadow. Upper-left soft studio lighting with crisp specular reflections. High-end 3D render, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "ENVÍOS FLEX" as chunky 3D extruded lettering in Anton font style. Glossy deep royal navy blue front faces (#0636A5) with a vibrant kinetic yellow lateral extrusion (#FFEC01). A stylized electric yellow lightning bolt mark (#FFEC01) sits dynamically immediately after the last letter 'X'. Framed at a three-quarter perspective angle on a seamless pure white ground (#FFFFFF) with a soft contact drop shadow. Upper-left soft studio lighting with crisp specular reflections. High-end 3D render, strict 3-color brand compliance, 8k resolution. `
   },
   {
     id: 'TYP-T4',
@@ -877,7 +886,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"PLAN EMPRENDEDORES"',
     locationContext: 'Seamless pure white studio floor with occlusion shadows',
     cameraAndMedium: 'Photorealistic PBR render with realistic fibrous kraft texture',
-    fullPromptText: `${TYPE_ANCHOR} The text "PLAN EMPRENDEDORES" as heavy 3D extruded lettering. The front faces feature a realistic matte kraft cardboard texture with fine corrugation fibers, crossed horizontally across the lower third by a strip of glossy kinetic yellow packaging tape (#FFEC01). The lateral block extrusion is rendered in deep Egyptian royal navy blue (#0636A5). Dynamic three-quarter view on a seamless pure white studio floor (#FFFFFF) with soft contact occlusion shadows. Warm diffused daylight mixed with soft upper-left studio fill. Photorealistic PBR render, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "PLAN EMPRENDEDORES" as heavy 3D extruded lettering. The front faces feature a realistic matte kraft cardboard texture with fine corrugation fibers, crossed horizontally across the lower third by a strip of glossy kinetic yellow packaging tape (#FFEC01). The lateral block extrusion is rendered in deep Egyptian royal navy blue (#0636A5). Dynamic three-quarter view on a seamless pure white studio floor (#FFFFFF) with soft contact occlusion shadows. Warm diffused daylight mixed with soft upper-left studio fill. Photorealistic PBR render, 8k resolution. `
   },
   {
     id: 'TYP-T5',
@@ -896,7 +905,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"E-COMMERCE & 3PL"',
     locationContext: 'Pure white ground with drop shadow',
     cameraAndMedium: 'Anton lettering with embossed geometric micro-grid pattern, 3D render',
-    fullPromptText: `${TYPE_ANCHOR} The text "E-COMMERCE & 3PL" as chunky 3D extruded lettering in Anton display font style. Vibrant kinetic yellow front faces (#FFEC01) featuring an embossed, subtle geometric micro-grid pattern reminiscent of digital tracking matrices. The lateral extrusion block is rendered in solid Egyptian royal navy blue (#0636A5). Three-quarter perspective angle from the left, resting on a pure white ground (#FFFFFF) with a soft contact drop shadow. Crisp directional studio lighting from the upper-left, sharp beveled edges, high-tech logistics aesthetic, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "E-COMMERCE & 3PL" as chunky 3D extruded lettering in Anton display font style. Vibrant kinetic yellow front faces (#FFEC01) featuring an embossed, subtle geometric micro-grid pattern reminiscent of digital tracking matrices. The lateral extrusion block is rendered in solid Egyptian royal navy blue (#0636A5). Three-quarter perspective angle from the left, resting on a pure white ground (#FFFFFF) with a soft contact drop shadow. Crisp directional studio lighting from the upper-left, sharp beveled edges, high-tech logistics aesthetic, 8k resolution. `
   },
   {
     id: 'TYP-T6',
@@ -915,7 +924,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"SAME DAY"',
     locationContext: 'Pure white background with ambient contact shadow',
     cameraAndMedium: 'Circular 3D embossed badge with delivery stopwatch icon',
-    fullPromptText: `${TYPE_ANCHOR} A circular 3D embossed badge in glossy Egyptian royal navy blue (#0636A5) with a thick kinetic yellow outer ring (#FFEC01). The text "SAME DAY" is curved boldly along the upper arc in crisp yellow lettering, with a clean yellow minimalist delivery stopwatch icon embossed in the center. Slight metallic chamfered bevel on the perimeter. Front-facing view with a slight 5-degree perspective tilt, centered on a pure white background (#FFFFFF) with a soft ambient contact shadow. Diffused studio lighting, ultra-sharp vector-like 3D render, 4k. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} A circular 3D embossed badge in glossy Egyptian royal navy blue (#0636A5) with a thick kinetic yellow outer ring (#FFEC01). The text "SAME DAY" is curved boldly along the upper arc in crisp yellow lettering, with a clean yellow minimalist delivery stopwatch icon embossed in the center. Slight metallic chamfered bevel on the perimeter. Front-facing view with a slight 5-degree perspective tilt, centered on a pure white background (#FFFFFF) with a soft ambient contact shadow. Diffused studio lighting, ultra-sharp vector-like 3D render, 4k. `
   },
   {
     id: 'TYP-T10',
@@ -934,7 +943,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"HOY MISMO"',
     locationContext: 'Deep royal navy blue background (#0636A5, #021440)',
     cameraAndMedium: 'Monumental uppercase lettering with vector motion trails',
-    fullPromptText: `${TYPE_ANCHOR} The text "HOY MISMO" in monumental uppercase lettering spanning the frame in vibrant electric kinetic yellow (#FFEC01) against a solid deep royal navy blue background (#0636A5, #021440). Subtle horizontal kinetic speed lines and faint vector motion trails trail to the left of the letters, while the lettering itself remains razor-sharp. Panoramic 16:9 composition, text centered slightly above the vertical midpoint leaving breathing room below. Clean flat graphic styling with a subtle ambient glow, high resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "HOY MISMO" in monumental uppercase lettering spanning the frame in vibrant electric kinetic yellow (#FFEC01) against a solid deep royal navy blue background (#0636A5, #021440). Subtle horizontal kinetic speed lines and faint vector motion trails trail to the left of the letters, while the lettering itself remains razor-sharp. Panoramic 16:9 composition, text centered slightly above the vertical midpoint leaving breathing room below. Clean flat graphic styling with a subtle ambient glow, high resolution. `
   },
   {
     id: 'TYP-T11',
@@ -953,7 +962,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"COTIZÁ TU ENVÍO"',
     locationContext: 'Solid Egyptian royal navy blue ground (#0636A5) with fine white vector grid',
     cameraAndMedium: 'Heavy Anton/Bebas display font with solid yellow drop shadow and chevron',
-    fullPromptText: `${TYPE_ANCHOR} The text "COTIZÁ TU ENVÍO" in large, bold uppercase lettering styled in heavy Anton/Bebas Neue display font in crisp pure white (#FFFFFF). The lettering features a sharp, solid drop-shadow offset to the lower-right in vibrant electric kinetic yellow (#FFEC01). Immediately following the last letter 'O', a dynamic kinetic yellow arrow chevron mark (#FFEC01) points to the right. Set against a solid Egyptian royal navy blue ground (#0636A5) with a delicate procedural white vector grid. Centered wide 16:9 composition with generous margins. Ultra-clean graphic design, 8k resolution. --ar 16:9 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "COTIZÁ TU ENVÍO" in large, bold uppercase lettering styled in heavy Anton/Bebas Neue display font in crisp pure white (#FFFFFF). The lettering features a sharp, solid drop-shadow offset to the lower-right in vibrant electric kinetic yellow (#FFEC01). Immediately following the last letter 'O', a dynamic kinetic yellow arrow chevron mark (#FFEC01) points to the right. Set against a solid Egyptian royal navy blue ground (#0636A5) with a delicate procedural white vector grid. Centered wide 16:9 composition with generous margins. Ultra-clean graphic design, 8k resolution. `
   },
   {
     id: 'TYP-T13',
@@ -972,7 +981,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"MDQ"',
     locationContext: 'Pure white background with soft drop shadow',
     cameraAndMedium: 'Embroidered twill fabric patch with tactile thread weaves and 3D puff',
-    fullPromptText: `${TYPE_ANCHOR} A circular embroidered fabric tactical patch with a heavy deep royal navy blue twill fabric base (#0636A5), framed by a thick merrowed border in electric kinetic yellow thread (#FFEC01). The text "MDQ" is stitched prominently across the center in raised, heavy yellow embroidery thread, showing tactile realistic thread weaves and 3D puff texture. Front-facing view, centered on a pure white background (#FFFFFF) with a soft contact drop shadow. Soft macro studio lighting from the upper-left, 4k photorealistic render. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} A circular embroidered fabric tactical patch with a heavy deep royal navy blue twill fabric base (#0636A5), framed by a thick merrowed border in electric kinetic yellow thread (#FFEC01). The text "MDQ" is stitched prominently across the center in raised, heavy yellow embroidery thread, showing tactile realistic thread weaves and 3D puff texture. Front-facing view, centered on a pure white background (#FFFFFF) with a soft contact drop shadow. Soft macro studio lighting from the upper-left, 4k photorealistic render. `
   },
   {
     id: 'TYP-T15',
@@ -991,7 +1000,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"DOSRUEDAS"',
     locationContext: 'Pure white background with generous padding',
     cameraAndMedium: 'Single-line energetic wordmark with wheel circle terminal',
-    fullPromptText: `${TYPE_ANCHOR} The text "DOSRUEDAS" as an energetic single-line wordmark in heavy Egyptian royal navy blue (#0636A5), with the interior letter counters subtly accented in electric kinetic yellow (#FFEC01). The typography is slightly italicized to convey aerodynamic speed, underlined by a sharp kinetic yellow horizontal stroke that terminates in a clean minimalist motorcycle wheel circle. Wide 3:2 layout, wordmark centered on a pure white background with generous padding. Razor-sharp vector graphic execution, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "DOSRUEDAS" as an energetic single-line wordmark in heavy Egyptian royal navy blue (#0636A5), with the interior letter counters subtly accented in electric kinetic yellow (#FFEC01). The typography is slightly italicized to convey aerodynamic speed, underlined by a sharp kinetic yellow horizontal stroke that terminates in a clean minimalist motorcycle wheel circle. Wide 3:2 layout, wordmark centered on a pure white background with generous padding. Razor-sharp vector graphic execution, 8k resolution. `
   },
   {
     id: 'TYP-T16',
@@ -1010,7 +1019,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"+50K"',
     locationContext: 'Pure white ground with crisp contact reflection',
     cameraAndMedium: 'Mirror-finish chrome 3D numerals reflecting navy blue and yellow environment',
-    fullPromptText: `${TYPE_ANCHOR} The numerical text "+50K" as monumental 3D extruded numerals with a mirror-finish chrome surface that reflects a clean studio environment of deep royal navy blue (#0636A5) and electric kinetic yellow (#FFEC01). Thick block extrusion, standing upright on a pure white ground (#FFFFFF) with a crisp contact reflection and soft ambient occlusion shadow. Front-facing view with a slight low-angle tilt to convey authority and scale. High-end Octane render, razor-sharp specular edge highlights, 8k resolution. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The numerical text "+50K" as monumental 3D extruded numerals with a mirror-finish chrome surface that reflects a clean studio environment of deep royal navy blue (#0636A5) and electric kinetic yellow (#FFEC01). Thick block extrusion, standing upright on a pure white ground (#FFFFFF) with a crisp contact reflection and soft ambient occlusion shadow. Front-facing view with a slight low-angle tilt to convey authority and scale. High-end Octane render, razor-sharp specular edge highlights, 8k resolution. `
   },
   {
     id: 'TYP-T19',
@@ -1029,7 +1038,7 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"FRÁGIL"',
     locationContext: 'Fibrous kraft cardboard background',
     cameraAndMedium: 'Rubber-stamp ink texture with realistic porous ink absorption',
-    fullPromptText: `${TYPE_ANCHOR} The text "FRÁGIL" stamped in heavy Egyptian royal navy blue rubber-stamp ink (#0636A5) directly onto authentic fibrous kraft cardboard. The stamp shows authentic micro-imperfections, slightly distressed ink texture, and realistic porous ink absorption. Enclosed by a rectangular stamped border with rounded corners and a small kinetic yellow corner mark (#FFEC01). Top-down flat-lay perspective, centered, the textured brown kraft paper fills the entire frame. Soft diffused natural daylight, macro photography look, 4k. --ar 1:1 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} The text "FRÁGIL" stamped in heavy Egyptian royal navy blue rubber-stamp ink (#0636A5) directly onto authentic fibrous kraft cardboard. The stamp shows authentic micro-imperfections, slightly distressed ink texture, and realistic porous ink absorption. Enclosed by a rectangular stamped border with rounded corners and a small kinetic yellow corner mark (#FFEC01). Top-down flat-lay perspective, centered, the textured brown kraft paper fills the entire frame. Soft diffused natural daylight, macro photography look, 4k. `
   },
   {
     id: 'TYP-T21',
@@ -1048,6 +1057,6 @@ export const PROMPT_LIBRARY: PromptLibraryItem[] = [
     subjectAndAction: '"RUTEO ACTIVO"',
     locationContext: 'Pure white background with soft contact shadow',
     cameraAndMedium: 'Glossy 3D horizontal pill badge with glowing yellow status dot',
-    fullPromptText: `${TYPE_ANCHOR} A glossy 3D horizontal pill badge in deep Egyptian royal navy blue (#0636A5) with a refined 1px border in soft tech blue (#628FF9). The text "RUTEO ACTIVO" is rendered in crisp electric kinetic yellow (#FFEC01) in Bebas Neue font, preceded by a bright, glowing yellow circular LED status dot on the left. Floating weightlessly above a pure white background (#FFFFFF) with a soft contact drop shadow. Soft studio lighting with a delicate lens bloom on the active status dot, 4k resolution. --ar 3:2 --style raw --v 6.0`
+    fullPromptText: `${TYPE_ANCHOR} A glossy 3D horizontal pill badge in deep Egyptian royal navy blue (#0636A5) with a refined 1px border in soft tech blue (#628FF9). The text "RUTEO ACTIVO" is rendered in crisp electric kinetic yellow (#FFEC01) in Bebas Neue font, preceded by a bright, glowing yellow circular LED status dot on the left. Floating weightlessly above a pure white background (#FFFFFF) with a soft contact drop shadow. Soft studio lighting with a delicate lens bloom on the active status dot, 4k resolution. `
   }
 ];

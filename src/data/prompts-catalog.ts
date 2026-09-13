@@ -40,14 +40,20 @@ export interface PromptItem {
   targetFile: string;
   targetComponent: string;
   aspectRatio: '16:9' | '3:2' | '1:1' | '9:16' | '4:3' | '4:5';
-  resolution: '1K' | '2K' | '4K' | '8K';
+  resolution: '0.5K' | '1K' | '2K' | '4K';
   engine: string;
   colorGlow: string;
   promptBody: string;
   negativeTokens?: string;
+  nanoBananaParams?: {
+    numImages?: number;
+    seed?: number;
+    safetyTolerance?: number;
+    outputFormat?: 'png' | 'jpeg' | 'webp';
+  };
 }
 
-export const TYPE_ANCHOR = `Bold condensed all-caps sans-serif lettering inspired by Anton and Bebas Neue display typography, heavy visual weight, tight letter-spacing, strictly governed by the Envíos DosRuedas 3-color palette: Egyptian Royal Navy Blue (#0636A5 / #021440), Electric Kinetic Yellow (#FFF12E / #FFEC01), and Pure White (#FFFFFF). Render the quoted text exactly on a single line, with zero spelling mistakes, no unwanted artifacts, and no third-party logos. Clean pure-white or deep-blue ground as specified, centered composition with generous negative space for UI cropping.`;
+export const TYPE_ANCHOR = `Type anchor: Bold condensed all-caps sans-serif lettering inspired by Anton and Bebas Neue display typography, heavy visual weight, tight letter-spacing, strictly governed by the Envíos DosRuedas 3-color palette: Egyptian Royal Navy Blue (#0636A5 / #021440), Electric Kinetic Yellow (#FFEC01), and Pure White (#FFFFFF). Render the quoted text exactly on a single line, with zero spelling mistakes, no unwanted artifacts, and no third-party logos. Clean pure-white or deep-blue ground as specified, centered composition with generous negative space for UI cropping.`;
 
 export const PROMPTS_CATALOG: PromptItem[] = [
   // --- SERVICIOS ---
@@ -64,10 +70,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'ExpressHero.tsx / ServiceCard.tsx',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "ENVÍOS EXPRESS" as chunky 3D extruded lettering in heavy Anton font style. Glossy polished electric kinetic yellow (#FFF12E) front faces with clean linear specular highlights. The lateral extrusion, extending one letter-height deep, is rendered in rich Egyptian royal navy blue (#0636A5) with smooth ambient occlusion shading. Framed at a dynamic three-quarter perspective angle from the left to showcase extrusion depth. Resting on a seamless pure white studio ground (#FFFFFF) with a soft ambient contact shadow and a faint yellow specular ground reflection. Upper-left directional key light casting crisp edge bevel highlights. High-end PBR materials, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical camo, weapons, grunge, low-res, blurry text, distorted letters'
+    promptBody: `The text "ENVÍOS EXPRESS" as chunky 3D extruded lettering in heavy Anton font style. Glossy polished electric kinetic yellow (#FFEC01) front faces with clean linear specular highlights. The lateral extrusion, extending one letter-height deep, is rendered in rich Egyptian royal navy blue (#0636A5) with smooth ambient occlusion shading. Framed at a dynamic three-quarter perspective angle from the left to showcase extrusion depth. Resting on a seamless pure white studio ground (#FFFFFF) with a soft ambient contact shadow and a faint yellow specular ground reflection. Upper-left directional key light casting crisp edge bevel highlights. High-end PBR materials, strict 3-color brand compliance, 8k resolution.`,
+    negativeTokens: 'military, tactical camo, weapons, grunge, low-res, blurry text, distorted letters',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T2',
@@ -82,10 +89,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'LowCostHero.tsx / LowCostSheet.tsx',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The text "ENVÍOS LOWCOST" as chunky 3D extruded lettering in heavy Anton display font style. Smooth matte pure-white front faces (#FFFFFF), outlined by a thin, sharp perimeter border in glossy electric kinetic yellow (#FFF12E). The lateral extrusion, extending one letter-height deep, is rendered in solid Egyptian royal navy blue (#0636A5). Framed at a dynamic three-quarter perspective angle from the left, resting on a pure white studio ground (#FFFFFF) with a soft contact shadow beneath. Soft directional key light from the upper-left casting clean edge highlights. Octane render style, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`,
-    negativeTokens: 'military, dark dirty textures, artifacts, noise, low poly'
+    promptBody: `The text "ENVÍOS LOWCOST" as chunky 3D extruded lettering in heavy Anton display font style. Smooth matte pure-white front faces (#FFFFFF), outlined by a thin, sharp perimeter border in glossy electric kinetic yellow (#FFEC01). The lateral extrusion, extending one letter-height deep, is rendered in solid Egyptian royal navy blue (#0636A5). Framed at a dynamic three-quarter perspective angle from the left, resting on a pure white studio ground (#FFFFFF) with a soft contact shadow beneath. Soft directional key light from the upper-left casting clean edge highlights. Octane render style, strict 3-color brand compliance, 8k resolution.`,
+    negativeTokens: 'military, dark dirty textures, artifacts, noise, low poly',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T3',
@@ -100,10 +108,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'FlexHero.tsx (MercadoLibre Flex)',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#22c55e]/25 to-transparent',
-    promptBody: `The text "ENVÍOS FLEX" as chunky 3D extruded lettering in Anton font style. Glossy deep royal navy blue front faces (#0636A5) with a vibrant kinetic yellow lateral extrusion (#FFF12E). A stylized electric yellow lightning bolt mark (#FFF12E) sits dynamically immediately after the last letter 'X'. Framed at a three-quarter perspective angle on a seamless pure white ground (#FFFFFF) with a soft contact drop shadow. Upper-left soft studio lighting with crisp specular reflections. High-end 3D render, strict 3-color brand compliance, 8k resolution. --ar 3:2 --style raw --v 6.0`,
-    negativeTokens: 'dirty textures, illegible typography, extra characters'
+    promptBody: `The text "ENVÍOS FLEX" as chunky 3D extruded lettering in Anton font style. Glossy deep royal navy blue front faces (#0636A5) with a vibrant kinetic yellow lateral extrusion (#FFEC01). A stylized electric yellow lightning bolt mark (#FFEC01) sits dynamically immediately after the last letter 'X'. Framed at a three-quarter perspective angle on a seamless pure white ground (#FFFFFF) with a soft contact drop shadow. Upper-left soft studio lighting with crisp specular reflections. High-end 3D render, strict 3-color brand compliance, 8k resolution.`,
+    negativeTokens: 'dirty textures, illegible typography, extra characters',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T4',
@@ -118,10 +127,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'EmprendedoresHero.tsx',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "PLAN EMPRENDEDORES" as heavy 3D extruded lettering. The front faces feature a realistic matte kraft cardboard texture with fine corrugation fibers, crossed horizontally across the lower third by a strip of glossy kinetic yellow packaging tape (#FFF12E). The lateral block extrusion is rendered in deep Egyptian royal navy blue (#0636A5). Dynamic three-quarter view on a seamless pure white studio floor (#FFFFFF) with soft contact occlusion shadows. Warm diffused daylight mixed with soft upper-left studio fill. Photorealistic PBR render, 8k resolution. --ar 3:2 --style raw --v 6.0`,
-    negativeTokens: 'torn edges, distressed grunge, military gear, dirt'
+    promptBody: `The text "PLAN EMPRENDEDORES" as heavy 3D extruded lettering. The front faces feature a realistic matte kraft cardboard texture with fine corrugation fibers, crossed horizontally across the lower third by a strip of glossy kinetic yellow packaging tape (#FFEC01). The lateral block extrusion is rendered in deep Egyptian royal navy blue (#0636A5). Dynamic three-quarter view on a seamless pure white studio floor (#FFFFFF) with soft contact occlusion shadows. Warm diffused daylight mixed with soft upper-left studio fill. Photorealistic PBR render, 8k resolution.`,
+    negativeTokens: 'torn edges, distressed grunge, military gear, dirt',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T5',
@@ -136,10 +146,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'FulfillmentHero.tsx (Friuli 1972)',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The text "E-COMMERCE & 3PL" as chunky 3D extruded lettering in Anton display font style. Vibrant kinetic yellow front faces (#FFF12E) featuring an embossed, subtle geometric micro-grid pattern reminiscent of digital tracking matrices. The lateral extrusion block is rendered in solid Egyptian royal navy blue (#0636A5). Three-quarter perspective angle from the left, resting on a pure white ground (#FFFFFF) with a soft contact drop shadow. Crisp directional studio lighting from the upper-left, sharp beveled edges, high-tech logistics aesthetic, 8k resolution. --ar 3:2 --style raw --v 6.0`,
-    negativeTokens: 'pixelated, low poly, noisy background, unreadable signs'
+    promptBody: `The text "E-COMMERCE & 3PL" as chunky 3D extruded lettering in Anton display font style. Vibrant kinetic yellow front faces (#FFEC01) featuring an embossed, subtle geometric micro-grid pattern reminiscent of digital tracking matrices. The lateral extrusion block is rendered in solid Egyptian royal navy blue (#0636A5). Three-quarter perspective angle from the left, resting on a pure white ground (#FFFFFF) with a soft contact drop shadow. Crisp directional studio lighting from the upper-left, sharp beveled edges, high-tech logistics aesthetic, 8k resolution.`,
+    negativeTokens: 'pixelated, low poly, noisy background, unreadable signs',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
 
   // --- SELLOS ---
@@ -156,9 +167,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Badges de entrega en el día / Cards',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A circular 3D embossed badge in glossy Egyptian royal navy blue (#0636A5) with a thick kinetic yellow outer ring (#FFF12E). The text "SAME DAY" is curved boldly along the upper arc in crisp yellow lettering, with a clean yellow minimalist delivery stopwatch icon embossed in the center. Slight metallic chamfered bevel on the perimeter. Front-facing view with a slight 5-degree perspective tilt, centered on a pure white background (#FFFFFF) with a soft ambient contact shadow. Diffused studio lighting, ultra-sharp vector-like 3D render, 4k. --ar 1:1 --style raw --v 6.0`
+    promptBody: `A circular 3D embossed badge in glossy Egyptian royal navy blue (#0636A5) with a thick kinetic yellow outer ring (#FFEC01). The text "SAME DAY" is curved boldly along the upper arc in crisp yellow lettering, with a clean yellow minimalist delivery stopwatch icon embossed in the center. Slight metallic chamfered bevel on the perimeter. Front-facing view with a slight 5-degree perspective tilt, centered on a pure white background (#FFFFFF) with a soft ambient contact shadow. Diffused studio lighting, ultra-sharp vector-like 3D render, 4k.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T7',
@@ -173,9 +186,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Tarjetas LowCost diferidas',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A circular 3D glossy badge in electric kinetic yellow (#FFF12E) with a deep Egyptian royal navy blue outer border (#0636A5). The text "NEXT DAY" is set straight across the center in heavy navy blue sans-serif typography, with a thin stylized navy sunrise arc icon positioned directly above the text. Subtle geometric bevel, perfectly centered on a pure white ground (#FFFFFF) with a soft drop shadow. Upper-left soft studio lighting, clean specular highlights, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `A circular 3D glossy badge in electric kinetic yellow (#FFEC01) with a deep Egyptian royal navy blue outer border (#0636A5). The text "NEXT DAY" is set straight across the center in heavy navy blue sans-serif typography, with a thin stylized navy sunrise arc icon positioned directly above the text. Subtle geometric bevel, perfectly centered on a pure white ground (#FFFFFF) with a soft drop shadow. Upper-left soft studio lighting, clean specular highlights, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T8',
@@ -190,9 +205,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'SLA de ruteo agrupado',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `A circular 3D badge in pure white (#FFFFFF) framed by an outer Egyptian royal navy blue ring (#0636A5) and an inner kinetic yellow accent ring (#FFF12E). The text "24 HS" is rendered in massive, heavy navy blue numbers and letters filling the center, complemented by a tiny kinetic yellow clock hand mark beneath. Straight-on composition, centered on pure white with a soft contact shadow. Crisp lighting, pristine clean vector 3D look, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `A circular 3D badge in pure white (#FFFFFF) framed by an outer Egyptian royal navy blue ring (#0636A5) and an inner kinetic yellow accent ring (#FFEC01). The text "24 HS" is rendered in massive, heavy navy blue numbers and letters filling the center, complemented by a tiny kinetic yellow clock hand mark beneath. Straight-on composition, centered on pure white with a soft contact shadow. Crisp lighting, pristine clean vector 3D look, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T9',
@@ -207,9 +224,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Pickup bonificado / Promociones',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A rounded rectangular 3D hanging tag in glossy Egyptian royal navy blue (#0636A5), suspended from a short looped cord in kinetic yellow (#FFF12E). The text "SIN CARGO" is embossed boldly across the tag in kinetic yellow lettering, with a clean circular reinforced punch hole at the top. Displayed at a dynamic slight diagonal tilt, centered on a pure white ground (#FFFFFF) with soft realistic drop shadows. Directional studio light from upper-left, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `A rounded rectangular 3D hanging tag in glossy Egyptian royal navy blue (#0636A5), suspended from a short looped cord in kinetic yellow (#FFEC01). The text "SIN CARGO" is embossed boldly across the tag in kinetic yellow lettering, with a clean circular reinforced punch hole at the top. Displayed at a dynamic slight diagonal tilt, centered on a pure white ground (#FFFFFF) with soft realistic drop shadows. Directional studio light from upper-left, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
 
   // --- FRASES HERO ---
@@ -226,9 +245,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Hero Banner / Stories',
     aspectRatio: '16:9',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "HOY MISMO" in monumental uppercase lettering spanning the frame in vibrant electric kinetic yellow (#FFF12E) against a solid deep royal navy blue background (#0636A5, #021440). Subtle horizontal kinetic speed lines and faint vector motion trails trail to the left of the letters, while the lettering itself remains razor-sharp. Panoramic 16:9 composition, text centered slightly above the vertical midpoint leaving breathing room below. Clean flat graphic styling with a subtle ambient glow, high resolution. --ar 16:9 --style raw --v 6.0`
+    promptBody: `The text "HOY MISMO" in monumental uppercase lettering spanning the frame in vibrant electric kinetic yellow (#FFEC01) against a solid deep royal navy blue background (#0636A5, #021440). Subtle horizontal kinetic speed lines and faint vector motion trails trail to the left of the letters, while the lettering itself remains razor-sharp. Panoramic 16:9 composition, text centered slightly above the vertical midpoint leaving breathing room below. Clean flat graphic styling with a subtle ambient glow, high resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T11',
@@ -243,9 +264,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'CTAFinal.tsx / Conversion Header',
     aspectRatio: '16:9',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "COTIZÁ TU ENVÍO" in large, bold uppercase lettering styled in heavy Anton/Bebas Neue display font in crisp pure white (#FFFFFF). The lettering features a sharp, solid drop-shadow offset to the lower-right in vibrant electric kinetic yellow (#FFF12E). Immediately following the last letter 'O', a dynamic kinetic yellow arrow chevron mark (#FFF12E) points to the right. Set against a solid Egyptian royal navy blue ground (#0636A5) with a delicate procedural white vector grid. Centered wide 16:9 composition with generous margins. Ultra-clean graphic design, 8k resolution. --ar 16:9 --style raw --v 6.0`
+    promptBody: `The text "COTIZÁ TU ENVÍO" in large, bold uppercase lettering styled in heavy Anton/Bebas Neue display font in crisp pure white (#FFFFFF). The lettering features a sharp, solid drop-shadow offset to the lower-right in vibrant electric kinetic yellow (#FFEC01). Immediately following the last letter 'O', a dynamic kinetic yellow arrow chevron mark (#FFEC01) points to the right. Set against a solid Egyptian royal navy blue ground (#0636A5) with a delicate procedural white vector grid. Centered wide 16:9 composition with generous margins. Ultra-clean graphic design, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T12',
@@ -260,9 +283,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Banners de confianza / Redes',
     aspectRatio: '16:9',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "ENTREGA EN EL DÍA" in bold uppercase letters rendered from smooth, glossy rounded tubes resembling a modern high-end architectural neon sign. The tubes glow in vibrant electric kinetic yellow (#FFF12E), mounted flush against a dark corporate navy blue acoustic panel (#021440). Wide 16:9 composition, text perfectly centered with balanced margins. Atmospheric self-illuminated lighting with soft yellow light spilling onto the deep blue backing, zero glare, ultra-realistic 3D render, 8k resolution. --ar 16:9 --style raw --v 6.0`
+    promptBody: `The text "ENTREGA EN EL DÍA" in bold uppercase letters rendered from smooth, glossy rounded tubes resembling a modern high-end architectural neon sign. The tubes glow in vibrant electric kinetic yellow (#FFEC01), mounted flush against a dark corporate navy blue acoustic panel (#021440). Wide 16:9 composition, text perfectly centered with balanced margins. Atmospheric self-illuminated lighting with soft yellow light spilling onto the deep blue backing, zero glare, ultra-realistic 3D render, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
 
   // --- PARCHES & WORDMARKS ---
@@ -279,10 +304,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Badges de identidad local / Footer',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A circular embroidered fabric patch with a clean deep royal navy blue twill fabric base (#0636A5), framed by a thick merrowed border in electric kinetic yellow thread (#FFF12E). The text "MDQ" is stitched prominently across the center in raised, heavy yellow embroidery thread, showing tactile realistic thread weaves and 3D puff texture. Front-facing view, centered on a pure white background (#FFFFFF) with a soft contact drop shadow. Soft macro studio lighting from the upper-left, 4k photorealistic render. --ar 1:1 --style raw --v 6.0`,
-    negativeTokens: 'military insignia, camouflage, war, weaponry, combat'
+    promptBody: `A circular embroidered fabric patch with a clean deep royal navy blue twill fabric base (#0636A5), framed by a thick merrowed border in electric kinetic yellow thread (#FFEC01). The text "MDQ" is stitched prominently across the center in raised, heavy yellow embroidery thread, showing tactile realistic thread weaves and 3D puff texture. Front-facing view, centered on a pure white background (#FFFFFF) with a soft contact drop shadow. Soft macro studio lighting from the upper-left, 4k photorealistic render.`,
+    negativeTokens: 'military insignia, camouflage, war, weaponry, combat',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T14',
@@ -297,9 +323,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Base de operaciones / Contacto',
     aspectRatio: '3:2',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A die-cut glossy vinyl sticker featuring the text "FRIULI 1972" in heavy Egyptian royal navy blue sans-serif (#0636A5) set within a rounded horizontal pill shape in kinetic yellow (#FFF12E), encased by a crisp 2mm white die-cut border (#FFFFFF). The sticker has a subtle glossy sheen and a tiny curled corner on the bottom-right showing the white adhesive backing, resting at a gentle 5-degree angle on a seamless pure white surface with a soft contact shadow. Macro studio lighting, 4k. --ar 3:2 --style raw --v 6.0`
+    promptBody: `A die-cut glossy vinyl sticker featuring the text "FRIULI 1972" in heavy Egyptian royal navy blue sans-serif (#0636A5) set within a rounded horizontal pill shape in kinetic yellow (#FFEC01), encased by a crisp 2mm white die-cut border (#FFFFFF). The sticker has a subtle glossy sheen and a tiny curled corner on the bottom-right showing the white adhesive backing, resting at a gentle 5-degree angle on a seamless pure white surface with a soft contact shadow. Macro studio lighting, 4k.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T15',
@@ -314,9 +342,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Logomarca secundaria / Merchandising',
     aspectRatio: '3:2',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The text "DOSRUEDAS" as an energetic single-line wordmark in heavy Egyptian royal navy blue (#0636A5), with the interior letter counters subtly accented in electric kinetic yellow (#FFF12E). The typography is slightly italicized to convey aerodynamic speed, underlined by a sharp kinetic yellow horizontal stroke that terminates in a clean minimalist motorcycle wheel circle. Wide 3:2 layout, wordmark centered on a pure white background with generous padding. Razor-sharp vector graphic execution, 8k resolution. --ar 3:2 --style raw --v 6.0`
+    promptBody: `The text "DOSRUEDAS" as an energetic single-line wordmark in heavy Egyptian royal navy blue (#0636A5), with the interior letter counters subtly accented in electric kinetic yellow (#FFEC01). The typography is slightly italicized to convey aerodynamic speed, underlined by a sharp kinetic yellow horizontal stroke that terminates in a clean minimalist motorcycle wheel circle. Wide 3:2 layout, wordmark centered on a pure white background with generous padding. Razor-sharp vector graphic execution, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
 
   // --- CIFRAS 3D ---
@@ -333,9 +363,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'TrustBar.tsx (Envíos completados)',
     aspectRatio: '1:1',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The numerical text "+50K" as monumental 3D extruded numerals with a mirror-finish chrome surface that reflects a clean studio environment of deep royal navy blue (#0636A5) and electric kinetic yellow (#FFF12E). Thick block extrusion, standing upright on a pure white ground (#FFFFFF) with a crisp contact reflection and soft ambient occlusion shadow. Front-facing view with a slight low-angle tilt to convey authority and scale. High-end Octane render, razor-sharp specular edge highlights, 8k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The numerical text "+50K" as monumental 3D extruded numerals with a mirror-finish chrome surface that reflects a clean studio environment of deep royal navy blue (#0636A5) and electric kinetic yellow (#FFEC01). Thick block extrusion, standing upright on a pure white ground (#FFFFFF) with a crisp contact reflection and soft ambient occlusion shadow. Front-facing view with a slight low-angle tilt to convey authority and scale. High-end Octane render, razor-sharp specular edge highlights, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T17',
@@ -350,9 +382,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'TrustBar.tsx (Paquetes extraviados)',
     aspectRatio: '1:1',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#22c55e]/25 to-transparent',
-    promptBody: `The single numerical digit "0" as a massive, glossy 3D numeral in Egyptian royal navy blue (#0636A5) with a beveled inner rim in electric kinetic yellow (#FFF12E). Nestled securely inside the center counter of the zero is a clean 3D checkmark icon in kinetic yellow. Standing upright on a seamless pure white surface (#FFFFFF) with a soft ambient contact shadow. Front-facing centered composition, generous negative space. Soft studio key lighting with clean top highlights, 8k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The single numerical digit "0" as a massive, glossy 3D numeral in Egyptian royal navy blue (#0636A5) with a beveled inner rim in electric kinetic yellow (#FFEC01). Nestled securely inside the center counter of the zero is a clean 3D checkmark icon in kinetic yellow. Standing upright on a seamless pure white surface (#FFFFFF) with a soft ambient contact shadow. Front-facing centered composition, generous negative space. Soft studio key lighting with clean top highlights, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T18',
@@ -367,22 +401,15 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'TrustBar.tsx / Sobre Nosotros',
     aspectRatio: '1:1',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The text "+7 AÑOS" as bold 3D extruded lettering where the numeral "7" is noticeably taller and heavier than the word "AÑOS". The front faces are coated in vibrant glossy electric kinetic yellow (#FFF12E), backed by a deep Egyptian royal navy blue extrusion (#0636A5) with smooth ambient occlusion shading. Displayed at a slight three-quarter angle from the left, standing on a pure white ground (#FFFFFF) with a soft contact shadow. Upper-left studio light casting crisp bevel highlights, 8k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The text "+7 AÑOS" as bold 3D extruded lettering where the numeral "7" is noticeably taller and heavier than the word "AÑOS". The front faces are coated in vibrant glossy electric kinetic yellow (#FFEC01), backed by a deep Egyptian royal navy blue extrusion (#0636A5) with smooth ambient occlusion shading. Displayed at a slight three-quarter angle from the left, standing on a pure white ground (#FFFFFF) with a soft contact shadow. Upper-left studio light casting crisp bevel highlights, 8k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
-
-  // --- EMBALAJE & LOGÍSTICA ---
   {
     id: 'T19',
     code: 'T19',
-    badge: 'EMBALAJE · SELLO DE GOMA',
-    category: 'Embalaje',
-    titulo: 'FRÁGIL',
-    textoRender: '"FRÁGIL"',
-    descripcion: 'Sello de tinta de goma azul marino estampado directamente sobre cartón kraft corrugado.',
-    iconName: 'Box',
-    targetFile: 'type-sello-fragil.png',
     badge: 'CIFRAS 3D · METRIC CARD',
     category: 'Cifras 3D',
     titulo: '99.4%',
@@ -393,10 +420,14 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'StatsSection.tsx / TrustBar.tsx',
     aspectRatio: '1:1',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The percentage text "99.4%" as massive 3D extruded figures in Bebas Neue font. Front faces in high-gloss pure white (#FFFFFF) with a thin Egyptian royal navy blue (#0636A5) edge bevel. Lateral extrusion in deep navy blue (#0636A5) with smooth ambient occlusion. The decimal point is a glowing kinetic yellow (#FFF12E) sphere. Isolated on a seamless pure white background (#FFFFFF) with contact shadow. Professional studio lighting, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The percentage text "99.4%" as massive 3D extruded figures in Bebas Neue font. Front faces in high-gloss pure white (#FFFFFF) with a thin Egyptian royal navy blue (#0636A5) edge bevel. Lateral extrusion in deep navy blue (#0636A5) with smooth ambient occlusion. The decimal point is a glowing kinetic yellow (#FFEC01) sphere. Isolated on a seamless pure white background (#FFFFFF) with contact shadow. Professional studio lighting, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
+
+  // --- EMBALAJE & LOGÍSTICA ---
   {
     id: 'T20',
     code: 'T20',
@@ -410,9 +441,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'PackagingSection.tsx / Hero',
     aspectRatio: '1:1',
     resolution: '2K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/25 to-transparent',
-    promptBody: `The text "ESTE LADO ARRIBA" stamped in deep Egyptian royal navy blue ink (#0636A5) on textured kraft cardboard, positioned directly beneath two bold, clean upward-pointing stamped arrows. The print displays authentic rubber-stamp texture with subtle distress along the edges, framed by a delicate stamped border. Direct top-down macro shot, perfectly centered, with the natural fibers and corrugated ribs of the kraft paper filling the background. Even studio daylight, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The text "ESTE LADO ARRIBA" stamped in deep Egyptian royal navy blue ink (#0636A5) on textured kraft cardboard, positioned directly beneath two bold, clean upward-pointing stamped arrows. The print displays authentic rubber-stamp texture with subtle distress along the edges, framed by a delicate stamped border. Direct top-down macro shot, perfectly centered, with the natural fibers and corrugated ribs of the kraft paper filling the background. Even studio daylight, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '2K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T21',
@@ -427,9 +460,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Indicador GPS en vivo / Hero',
     aspectRatio: '3:2',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `A glossy 3D horizontal pill badge in deep Egyptian royal navy blue (#0636A5) with a refined 1px border in soft tech blue (#628FF9). The text "RUTEO ACTIVO" is rendered in crisp electric kinetic yellow (#FFF12E) in Bebas Neue font, preceded by a bright, glowing yellow circular LED status dot on the left. Floating weightlessly above a pure white background (#FFFFFF) with a soft contact drop shadow. Soft studio lighting with a delicate lens bloom on the active status dot, 4k resolution. --ar 3:2 --style raw --v 6.0`
+    promptBody: `A glossy 3D horizontal pill badge in deep Egyptian royal navy blue (#0636A5) with a refined 1px border in soft tech blue (#628FF9). The text "RUTEO ACTIVO" is rendered in crisp electric kinetic yellow (#FFEC01) in Bebas Neue font, preceded by a bright, glowing yellow circular LED status dot on the left. Floating weightlessly above a pure white background (#FFFFFF) with a soft contact drop shadow. Soft studio lighting with a delicate lens bloom on the active status dot, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T22',
@@ -444,9 +479,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Notificaciones de tracking / SLA',
     aspectRatio: '3:2',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#22c55e]/25 to-transparent',
-    promptBody: `A glossy 3D horizontal pill badge in pure white (#FFFFFF) with an outer border in Egyptian royal navy blue (#0636A5). The text "ENTREGADO" is set in bold navy blue lettering, preceded by a solid kinetic yellow circular badge (#FFF12E) carrying an embossed navy blue checkmark icon. Floating slightly above a pure white ground with a soft ambient occlusion shadow beneath. Clean upper-left studio light, modern UI/UX design asset, 4k resolution. --ar 3:2 --style raw --v 6.0`
+    promptBody: `A glossy 3D horizontal pill badge in pure white (#FFFFFF) with an outer border in Egyptian royal navy blue (#0636A5). The text "ENTREGADO" is set in bold navy blue lettering, preceded by a solid kinetic yellow circular badge (#FFEC01) carrying an embossed navy blue checkmark icon. Floating slightly above a pure white ground with a soft ambient occlusion shadow beneath. Clean upper-left studio light, modern UI/UX design asset, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '3:2', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T23',
@@ -461,10 +498,14 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Campañas de comunidad en Instagram',
     aspectRatio: '1:1',
     resolution: '1K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/25 to-transparent',
-    promptBody: `The hashtag text "#RUTASMDQ" in large, soft-touch matte 3D rubbery letters in vibrant electric kinetic yellow (#FFF12E), set against a solid Egyptian royal navy blue background (#0636A5). A subtle white and yellow dotted GPS route line weaves playfully behind and between the letters. Square 1:1 composition, text centered on a single line with generous breathing space. Soft directional studio lighting from the upper-left casting gentle drop shadows onto the blue backing, 4k resolution. --ar 1:1 --style raw --v 6.0`
+    promptBody: `The hashtag text "#RUTASMDQ" in large, soft-touch matte 3D rubbery letters in vibrant electric kinetic yellow (#FFEC01), set against a solid Egyptian royal navy blue background (#0636A5). A subtle white and yellow dotted GPS route line weaves playfully behind and between the letters. Square 1:1 composition, text centered on a single line with generous breathing space. Soft directional studio lighting from the upper-left casting gentle drop shadows onto the blue backing, 4k resolution.`,
+    negativeTokens: '',
+    nanoBananaParams: { numImages: 1, resolution: '1K', aspectRatio: '1:1', outputFormat: 'png', safetyTolerance: 4 }
   },
+
+  // --- HERO SITEMAP ---
   {
     id: 'T24',
     code: 'T24',
@@ -478,10 +519,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'Home.tsx / Hero Section',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "LOGÍSTICA URBANA ÁGIL & RÁPIDA" as massive 3D extruded lettering in Anton font style. "LOGÍSTICA URBANA" in polished electric kinetic yellow (#FFF12E) and "& RÁPIDA" in Egyptian royal navy blue (#0636A5) with pure white (#FFFFFF) extrusion bevels. Set against a deep midnight blue (#021440) studio environment with soft ground reflection and subtle yellow atmospheric bokeh. Professional high-end 3D typography render, crisp specular highlights, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, camo, weapons, low-res, blurry, distorted typography'
+    promptBody: `The headline text "LOGÍSTICA URBANA ÁGIL & RÁPIDA" as massive 3D extruded lettering in Anton font style. "LOGÍSTICA URBANA" in polished electric kinetic yellow (#FFEC01) and "& RÁPIDA" in Egyptian royal navy blue (#0636A5) with pure white (#FFFFFF) extrusion bevels. Set against a deep midnight blue (#021440) studio environment with soft ground reflection and subtle yellow atmospheric bokeh. Professional high-end 3D typography render, crisp specular highlights, 8k resolution.`,
+    negativeTokens: 'military, tactical, camo, weapons, low-res, blurry, distorted typography',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T25',
@@ -496,10 +538,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'ExpressHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "CADETERÍA EXPRESS INMEDIATA" in dynamic forward-leaning 3D extruded typography in Anton font. Front faces in glossy electric kinetic yellow (#FFF12E) with deep Egyptian royal navy blue (#0636A5) lateral extrusion. Delicate light-streak motion accents behind the lettering. Seamless dark navy blue ground (#021440) with bright edge bevel highlights. Commercial advertising 3D render, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, dark grunge, low-res'
+    promptBody: `The headline text "CADETERÍA EXPRESS INMEDIATA" in dynamic forward-leaning 3D extruded typography in Anton font. Front faces in glossy electric kinetic yellow (#FFEC01) with deep Egyptian royal navy blue (#0636A5) lateral extrusion. Delicate light-streak motion accents behind the lettering. Seamless dark navy blue ground (#021440) with bright edge bevel highlights. Commercial advertising 3D render, 8k resolution.`,
+    negativeTokens: 'military, tactical, dark grunge, low-res',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T26',
@@ -514,10 +557,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'LowCostHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "ENVÍOS PROGRAMADOS LOW COST" in heavy 3D extruded Bebas Neue lettering. "ENVÍOS PROGRAMADOS" in glossy pure white (#FFFFFF) with navy extrusion; "LOW COST" highlighted in large electric kinetic yellow (#FFF12E) with navy bevels (#0636A5). Clean studio floor with contact shadow, 3-point commercial studio lighting, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, blurry, artifacts'
+    promptBody: `The headline text "ENVÍOS PROGRAMADOS LOW COST" in heavy 3D extruded Bebas Neue lettering. "ENVÍOS PROGRAMADOS" in glossy pure white (#FFFFFF) with navy extrusion; "LOW COST" highlighted in large electric kinetic yellow (#FFEC01) with navy bevels (#0636A5). Clean studio floor with contact shadow, 3-point commercial studio lighting, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, blurry, artifacts',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T27',
@@ -532,10 +576,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'FlexHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "INTEGRACIÓN MERCADOLIBRE FLEX" in chunky 3D extruded lettering in Anton font. "INTEGRACIÓN" in Egyptian royal navy blue (#0636A5) with white extrusion; "MERCADOLIBRE FLEX" in radiant kinetic yellow (#FFF12E) with deep navy extrusion. A subtle 3D green certified checkmark floats to the right. Seamless pure white studio background with soft ambient shadows, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, grunge, distorted typography'
+    promptBody: `The headline text "INTEGRACIÓN MERCADOLIBRE FLEX" in chunky 3D extruded lettering in Anton font. "INTEGRACIÓN" in Egyptian royal navy blue (#0636A5) with white extrusion; "MERCADOLIBRE FLEX" in radiant kinetic yellow (#FFEC01) with deep navy extrusion. A subtle 3D green certified checkmark floats to the right. Seamless pure white studio background with soft ambient shadows, 8k resolution.`,
+    negativeTokens: 'military, tactical, grunge, distorted typography',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T28',
@@ -550,10 +595,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'EmprendedorHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "IMPULSÁ TU E-COMMERCE LOCAL" in bold 3D extruded typography in Bebas Neue font. "IMPULSÁ TU" in high-gloss navy blue (#0636A5); "E-COMMERCE LOCAL" in electric kinetic yellow (#FFF12E) with pure white extrusion depth. Floating slightly above a white reflective studio ground with soft yellow specular glow, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, blurry letters'
+    promptBody: `The headline text "IMPULSÁ TU E-COMMERCE LOCAL" in bold 3D extruded typography in Bebas Neue font. "IMPULSÁ TU" in high-gloss navy blue (#0636A5); "E-COMMERCE LOCAL" in electric kinetic yellow (#FFEC01) with pure white extrusion depth. Floating slightly above a white reflective studio ground with soft yellow specular glow, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, blurry letters',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T29',
@@ -568,10 +614,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'CotizadorExpressHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "COTIZÁ TU ENVÍO EN TIEMPO REAL" in bold 3D extruded lettering in Anton font. Front faces in kinetic yellow (#FFF12E) with navy blue (#0636A5) lateral extrusion. Surrounded by subtle floating 3D calculation and pin badges in white and navy. Seamless dark background (#021440), upper-left directional lighting, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, camo, tactical, low quality'
+    promptBody: `The headline text "COTIZÁ TU ENVÍO EN TIEMPO REAL" in bold 3D extruded lettering in Anton font. Front faces in kinetic yellow (#FFEC01) with navy blue (#0636A5) lateral extrusion. Surrounded by subtle floating 3D calculation and pin badges in white and navy. Seamless dark background (#021440), upper-left directional lighting, 8k resolution.`,
+    negativeTokens: 'military, camo, tactical, low quality',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T30',
@@ -586,10 +633,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'CotizadorLowCostHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "CALCULÁ TU TARIFA LOW COST" in 3D extruded lettering in Bebas Neue font. "CALCULÁ TU TARIFA" in pure white (#FFFFFF) with navy bevels; "LOW COST" in oversized kinetic yellow (#FFF12E) letters. Studio white ground with soft contact shadows, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, blurry text'
+    promptBody: `The headline text "CALCULÁ TU TARIFA LOW COST" in 3D extruded lettering in Bebas Neue font. "CALCULÁ TU TARIFA" in pure white (#FFFFFF) with navy bevels; "LOW COST" in oversized kinetic yellow (#FFEC01) letters. Studio white ground with soft contact shadows, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, blurry text',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T31',
@@ -604,10 +652,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'ContactoHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "CONECTÁ CON NUESTRA CENTRAL" in bold 3D extruded Anton font. Glossy deep Egyptian royal navy blue (#0636A5) front faces with electric kinetic yellow (#FFF12E) lateral extrusion and bevel highlights. A small glowing signal radio wave icon floats beside the text. Seamless dark navy blue background (#021440), 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, noisy background'
+    promptBody: `The headline text "CONECTÁ CON NUESTRA CENTRAL" in bold 3D extruded Anton font. Glossy deep Egyptian royal navy blue (#0636A5) front faces with electric kinetic yellow (#FFEC01) lateral extrusion and bevel highlights. A small glowing signal radio wave icon floats beside the text. Seamless dark navy blue background (#021440), 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, noisy background',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T32',
@@ -622,10 +671,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'SobreNosotrosHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "PASIÓN POR LA LOGÍSTICA URBANA" in heavy 3D extruded lettering in Bebas Neue font. "PASIÓN POR LA" in Egyptian royal navy blue (#0636A5); "LOGÍSTICA URBANA" in electric kinetic yellow (#FFF12E) with navy bevels. Soft white studio backdrop with soft ambient ground reflections, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, low-res'
+    promptBody: `The headline text "PASIÓN POR LA LOGÍSTICA URBANA" in heavy 3D extruded lettering in Bebas Neue font. "PASIÓN POR LA" in Egyptian royal navy blue (#0636A5); "LOGÍSTICA URBANA" in electric kinetic yellow (#FFEC01) with navy bevels. Soft white studio backdrop with soft ambient ground reflections, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, low-res',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T33',
@@ -640,10 +690,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'FaqHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "RESOLVÉ TODAS TUS DUDAS" in friendly yet bold 3D extruded typography in Anton font style. Front faces in pure white (#FFFFFF) with a 2px electric kinetic yellow (#FFF12E) outer stroke and Egyptian royal navy blue (#0636A5) extrusion depth. Isolated on a clean dark blue studio ground (#021440), 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, dark grunge, blurry'
+    promptBody: `The headline text "RESOLVÉ TODAS TUS DUDAS" in friendly yet bold 3D extruded typography in Anton font style. Front faces in pure white (#FFFFFF) with a 2px electric kinetic yellow (#FFEC01) outer stroke and Egyptian royal navy blue (#0636A5) extrusion depth. Isolated on a clean dark blue studio ground (#021440), 8k resolution.`,
+    negativeTokens: 'military, tactical, dark grunge, blurry',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T34',
@@ -658,10 +709,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'RedesHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#FFF12E]/30 to-transparent',
-    promptBody: `The headline text "SUMATE A LA COMUNIDAD DOSRUEDAS" in playful 3D extruded lettering in Bebas Neue font. "SUMATE A LA" in navy blue (#0636A5); "COMUNIDAD DOSRUEDAS" in bold kinetic yellow (#FFF12E) with white lateral extrusion. Floating in studio space above a white reflective floor with subtle yellow bokeh, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, blurry letters'
+    promptBody: `The headline text "SUMATE A LA COMUNIDAD DOSRUEDAS" in playful 3D extruded lettering in Bebas Neue font. "SUMATE A LA" in navy blue (#0636A5); "COMUNIDAD DOSRUEDAS" in bold kinetic yellow (#FFEC01) with white lateral extrusion. Floating in studio space above a white reflective floor with subtle yellow bokeh, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, blurry letters',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T35',
@@ -676,10 +728,11 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'PrivacidadHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "PRIVACIDAD Y PROTECCIÓN DE DATOS" in clean, authoritative 3D extruded typography in Bebas Neue font style. Pure white (#FFFFFF) front faces with Egyptian royal navy blue (#0636A5) extrusion depth and delicate kinetic yellow (#FFF12E) bevel edges. Isolated on a minimal deep navy background (#021440), 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapon, grunge, low quality'
+    promptBody: `The headline text "PRIVACIDAD Y PROTECCIÓN DE DATOS" in clean, authoritative 3D extruded typography in Bebas Neue font style. Pure white (#FFFFFF) front faces with Egyptian royal navy blue (#0636A5) extrusion depth and delicate kinetic yellow (#FFEC01) bevel edges. Isolated on a minimal deep navy background (#021440), 8k resolution.`,
+    negativeTokens: 'military, tactical, weapon, grunge, low quality',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   },
   {
     id: 'T36',
@@ -694,9 +747,10 @@ export const PROMPTS_CATALOG: PromptItem[] = [
     targetComponent: 'TerminosHero.tsx',
     aspectRatio: '16:9',
     resolution: '4K',
-    engine: 'Midjourney v6.0',
+    engine: 'Nano Banana 2 (Gemini 2.5 Flash Image)',
     colorGlow: 'from-[#0950F6]/30 to-transparent',
-    promptBody: `The headline text "TÉRMINOS Y CONDICIONES DE SERVICIO" in structured 3D extruded typography in Anton font. Egyptian royal navy blue (#0636A5) front faces with thin pure white (#FFFFFF) borders and subtle electric kinetic yellow (#FFF12E) side extrusion. Crisp studio lighting on a pure white background, 8k resolution. --ar 16:9 --style raw --v 6.0`,
-    negativeTokens: 'military, tactical, weapons, blurry letters, distorted text'
+    promptBody: `The headline text "TÉRMINOS Y CONDICIONES DE SERVICIO" in structured 3D extruded typography in Anton font. Egyptian royal navy blue (#0636A5) front faces with thin pure white (#FFFFFF) borders and subtle electric kinetic yellow (#FFEC01) side extrusion. Crisp studio lighting on a pure white background, 8k resolution.`,
+    negativeTokens: 'military, tactical, weapons, blurry letters, distorted text',
+    nanoBananaParams: { numImages: 1, resolution: '4K', aspectRatio: '16:9', outputFormat: 'png', safetyTolerance: 4 }
   }
 ];
