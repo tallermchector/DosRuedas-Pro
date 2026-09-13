@@ -41,12 +41,12 @@ import {
   type WebComponentItem,
   type ComponentCategory
 } from '@/data/web-components-catalog';
+import { optimizeWebPrompt } from '@/ai/flows/optimize-web-prompt';
 import {
-  optimizeWebPrompt,
   type WebPromptInput,
   type WebPromptOutput,
-  buildDeterministicWebPrompt
-} from '@/ai/flows/optimize-web-prompt';
+  buildDeterministicWebPrompt,
+} from '@/ai/flows/web-prompt-builder';
 
 // Category Icon Helper (Hoisted outside component to avoid recreation during render)
 function CategoryIcon({ category }: { category: ComponentCategory }) {
