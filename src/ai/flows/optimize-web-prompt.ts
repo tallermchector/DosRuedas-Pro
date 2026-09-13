@@ -2,11 +2,25 @@
 /**
  * @fileOverview Genkit Flow for optimizing web component prompts for Envíos DosRuedas.
  * 
- * Generates natural language, production-grade frontend engineering prompts ready to be
- * passed to an AI coding agent (Cursor, Antigravity, Claude, etc.) to build visual components.
- * 
- * Complies with GEMINI.md (Structured outputs, Zod validation, Gemini 2.5 Flash with fallback)
- * and AGENTS.md (Tailwind CSS, Lucide icons, Design tokens, Rioplatense voice).
+ * Complies with the official "Envíos DosRuedas Design System":
+ * - Strict 3-Color Triad:
+ *   - Brand Blue: #0C59F2 (Azul Eléctrico Institucional) - Único azul permitido.
+ *   - Brand Yellow: #FFF12E (Amarillo Neón de Alta Visibilidad) - Único acento para CTAs y badges.
+ *   - Brand White: #FFFFFF (Blanco Óptico Puro) - Superficies de tarjetas, textos de alto contraste.
+ * - Strict Typography Hierarchy:
+ *   - Display & Hero: Anton (72px desktop / 44px móvil, uppercase, leading 0.98, tracking -0.04em)
+ *   - Section Headlines: Anton (48px, uppercase, leading 1.0)
+ *   - Subheadings, Badges & CTAs: Bebas Neue (18px, uppercase, tracking 0.1em)
+ *   - Body & Párrafos: Outfit (16px, leading 1.6, max 65 chars)
+ *   - Datos Numéricos, Tarifas, Tiempos: Geist Mono (14px, weight 600)
+ * - Shadows & Physics:
+ *   - glow-yellow: 0 0 25px rgba(255, 241, 46, 0.35)
+ *   - card-elevation: 0 20px 40px -15px rgba(12, 89, 242, 0.15)
+ *   - Spring physics: stiffness: 100, damping: 20
+ * - Anti-Patterns:
+ *   - CERO múltiples azules (prohibidos #052C87, #0636A5, #031E5C).
+ *   - CERO negro absoluto (#000000). El contraste sobre blanco se resuelve con #0C59F2.
+ *   - CERO emojis. Usar Lucide React icons.
  */
 
 import { ai } from '@/ai/genkit';
@@ -16,17 +30,17 @@ import { z } from 'genkit';
 // INPUT & OUTPUT SCHEMAS
 // ==========================================
 export const WebPromptInputSchema = z.object({
-  componentName: z.string().describe('Name of the component to create/refactor (e.g. Hero, ServicesOverview, DoubleBezelCard).'),
+  componentName: z.string().describe('Name of the component to create/refactor (e.g. Hero, ServicesOverview, BentoGrid).'),
   pageName: z.string().describe('Target page or section context (e.g. Home (Inicio), Cotizador Express).'),
   category: z.string().describe('Component category: hero, cards, bento, form, cta, table, stats, stepper, faq, slider, uikit, legal.'),
   componentPath: z.string().describe('Expected repository file path (e.g. src/components/Hero.tsx).'),
   baselineContent: z.string().describe('Text copy, data, and functional requirements from docs/contenido.'),
   elementsToReview: z.array(z.string()).default([]).describe('Mandatory visual specs or review criteria.'),
   visualPresets: z.object({
-    glowNeon: z.boolean().default(true).describe('Include High-Voltage Yellow neon glow effects.'),
+    glowNeon: z.boolean().default(true).describe('Include High-Visibility Neon Yellow (#FFF12E) glow effects.'),
     doubleBezel: z.boolean().default(false).describe('Use DoubleBezelCard concentric borders.'),
-    glassmorphism: z.boolean().default(true).describe('Use backdrop-blur-md and semi-transparent dark navy surfaces.'),
-    navySurface: z.boolean().default(true).describe('Use Midnight Navy (#052C87) surfaces instead of generic gray.'),
+    glassmorphism: z.boolean().default(true).describe('Use backdrop-blur-md and semi-transparent white surfaces (bg-white/10).'),
+    whiteSurface: z.boolean().default(true).describe('Use pure optical white (#FFFFFF) card surface with #0C59F2 text.'),
     animationType: z.enum(['framer-motion', 'tailwind-css', 'none']).default('framer-motion').describe('Animation engine to specify.'),
     targetDevice: z.enum(['responsive-hybrid', 'mobile-first', 'desktop-enterprise']).default('responsive-hybrid').describe('Target viewport priority.'),
   }).optional(),
@@ -59,14 +73,14 @@ export function buildDeterministicWebPrompt(input: WebPromptInput): WebPromptOut
     glowNeon: true,
     doubleBezel: false,
     glassmorphism: true,
-    navySurface: true,
+    whiteSurface: true,
     animationType: 'framer-motion',
     targetDevice: 'responsive-hybrid',
   };
 
   const elementsList = (input.elementsToReview && input.elementsToReview.length > 0)
     ? input.elementsToReview.map(e => `  - ${e}`).join('\n')
-    : '  - Mantener fidelidad visual estricta con el sistema de diseño 2026 de Envíos DosRuedas.';
+    : '  - Mantener fidelidad visual estricta con la tríada pura (#0C59F2, #FFF12E, #FFFFFF).';
 
   const suggestedIcons = ['ArrowRight', 'CheckCircle2', 'Clock', 'MapPin', 'ShieldCheck', 'Sparkles', 'Package'];
 
@@ -77,7 +91,7 @@ export function buildDeterministicWebPrompt(input: WebPromptInput): WebPromptOut
 
 ## 1. Misión y Alcance
 Construí el componente visual \`${input.componentName}\` para la plataforma logística de última milla "Envíos DosRuedas" en Mar del Plata.
-El componente debe ser autónomo, modular, tipado estrictamente en TypeScript (sin uso de \`any\`), responsive (${presets.targetDevice}), accesible (WCAG 2.2 AA) y listo para producción.
+El componente debe ser modular, autónomo, tipado estrictamente en TypeScript (sin \`any\`), responsive (${presets.targetDevice}), accesible (WCAG 2.2 AA) y respetar sin excepciones el sistema de diseño oficial de la marca.
 
 ## 2. Contenido Base y Requerimientos de Negocio (docs/contenido)
 ${input.baselineContent}
@@ -86,52 +100,54 @@ ${input.baselineContent}
 ${elementsList}
 ${input.customDirectives ? `\n## 4. Instrucciones Especiales del Usuario\n${input.customDirectives}` : ''}
 
-## ${input.customDirectives ? '5' : '4'}. Tokens de Diseño Inmutables de Envíos DosRuedas
-- Paleta Corporativa:
-  - Brand Primary (Azul Rey / Speed Blue): #0636A5
-  - Brand Accent (Amarillo Cinético / Neón): #FFF12E o #FFEC01
-  - Superficies Oscuras: Midnight Navy (#052C87) y Deep Contrast (#031E5C) (prohibido usar grises neutros genéricos de Tailwind)
-  - Superficie Texto / Íconos: Blanco puro (#FFFFFF) y Slate Claro (#F8FAFC)
-  - Bordes Luminosos: border-white/10 o border-[#FFF12E]/30
-- Tipografía y Jerarquía:
-  - Títulos Principales y Display: 'Anton', sans-serif (UPPERCASE, opcional sutil inclinación -1deg)
-  - Badges, Subtítulos y CTAs: 'Bebas Neue', sans-serif (tracking-wider uppercase)
-  - Texto de Lectura y Párrafos: 'Outfit', sans-serif (interlineado holgado)
-  - Cifras, Precios, Direcciones y Horarios: 'Geist Mono', monospace (tabular-nums)
-- Elevación y Superficies:
-  ${presets.doubleBezel ? '- Estructura de Bisel Doble (DoubleBezelCard): contenedor con borde exterior fino y contorno interior con resplandor sutil.' : '- Tarjetas redondeadas: rounded-3xl (28px de radio) con padding holgado.'}
-  ${presets.glassmorphism ? '- Efecto Glassmorphism: backdrop-blur-md con fondo Midnight Navy semitransparente (bg-[#052C87]/80 o bg-white/5).' : ''}
-  ${presets.glowNeon ? '- Resplandor Neón en CTAs: shadow-[0_0_20px_rgba(255,241,46,0.35)] en botones activos y píldoras amarillas.' : ''}
-  - Hover & Microinteracciones: ${presets.animationType === 'framer-motion' ? 'Integrar Framer Motion con transiciones fluidas de entrada (initial/animate) y microinteracciones de escala en hover/tap.' : 'Usar clases de Tailwind CSS como transition-all duration-200 hover:-translate-y-1 active:scale-95.'}
+## ${input.customDirectives ? '5' : '4'}. Tokens de Diseño Inmutables (Tríada Estricta de 3 Colores)
+- Paleta Cromática Obligatoria:
+  - Brand Blue (Azul Eléctrico Institucional): #0C59F2 (Es el ÚNICO azul permitido. Prohibidos azul marino, slate o celestes).
+  - Brand Yellow (Amarillo Neón de Alta Visibilidad): #FFF12E (Único acento de conversión para CTAs primarios, badges de urgencia 30-90 min y glow).
+  - Brand White (Blanco Óptico Puro): #FFFFFF (Superficie base para tarjetas de cotización, modales y textos principales sobre azul).
+  - Anti-patrón de Contraste: NUNCA usar negro (#000000). El contraste sobre fondos blancos se resuelve con texto #0C59F2 o #0C59F2/80.
+- Jerarquía Tipográfica de Precisión:
+  - Titulares Display (Hero): 'Anton', sans-serif (72px desktop / 44px móvil, UPPERCASE, leading [0.98], tracking [-0.04em]).
+  - Encabezados de Sección: 'Anton', sans-serif (48px, UPPERCASE, leading [1.0]).
+  - Subtítulos, Badges de Estado y CTAs: 'Bebas Neue', sans-serif (18px, UPPERCASE, tracking [0.1em], leading [1.0]).
+  - Texto de Lectura y Párrafos: 'Outfit', sans-serif (16px, leading [1.6], pesos 300/400/600, máx 65 caracteres de ancho).
+  - Datos Numéricos, Tarifas y Tiempos: 'Geist Mono', monospace (14px, weight 600, tabular-nums). Prohibido inventar métricas irreales.
+- Estructura y Superficies:
+  ${presets.whiteSurface ? '- Tarjetas Claras: Fondo blanco óptico #FFFFFF con bordes sutiles border-[#0C59F2]/10 y sombra shadow-[0_20px_40px_-15px_rgba(12,89,242,0.15)]. Textos e iconos en #0C59F2.' : ''}
+  ${presets.glassmorphic ? '- Tarjetas Glassmorphic: Fondo translúcido bg-white/10 con backdrop-blur-md, bordes border-white/20 y esquinas rounded-3xl. Textos en #FFFFFF.' : ''}
+  ${presets.doubleBezel ? '- Doble Bisel (DoubleBezelCard): Contenedor con borde concéntrico exterior e interior para elevación técnica.' : '- Curvatura: rounded-2xl a rounded-3xl (24px a 28px de radio).'}
+  ${presets.glowNeon ? '- Botón Principal (CTA): Fondo amarillo neón #FFF12E, texto azul #0C59F2 en Bebas Neue mayúsculas, forma rounded-full, sombra reflectiva shadow-[0_0_25px_rgba(255,241,46,0.35)]. Al pulsar: escala reactiva scale-[0.98].' : ''}
+  - Micro-interacciones: ${presets.animationType === 'framer-motion' ? 'Física de resortes (stiffness: 100, damping: 20). Prohibido animar top/left/width/height, usar solo transform y opacity en GPU.' : 'Transiciones ágiles con Tailwind CSS (transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]).'}
 
 ## ${input.customDirectives ? '6' : '5'}. Tono de Marca y Localización
 - Español rioplatense auténtico con voseo profesional ("Cotizá", "Calculá", "Elegí", "Sumate", "Hablemos").
-- Referencias operativas reales: Depósito central en Friuli 1972 (Chauvín, Mar del Plata), cobertura en todo General Pueyrredón y Batán.
+- Operación real en Mar del Plata: Depósito central Friuli 1972 (Chauvín), cobertura total en General Pueyrredón y Batán. Envíos Express 30-90 min.
 
 ## ${input.customDirectives ? '7' : '6'}. Entregable Requerido
-Escribí el código completo del componente en TSX, con todas sus importaciones (únicamente iconos de \`lucide-react\`), tipos de TypeScript documentados y comentarios concisos de arquitectura. Evitá placeholders o lógica truncada.`;
+Escribí el código completo del componente en TSX, con todas sus importaciones (únicamente iconos de \`lucide-react\`, sin emojis), tipos de TypeScript documentados y comentarios concisos de arquitectura.`;
 
   return {
-    title: `Prompt Optimizado: ${input.componentName} (${input.pageName})`,
+    title: `Prompt Oficial: ${input.componentName} (${input.pageName})`,
     optimizedPrompt: promptText,
     promptBreakdown: {
       roleDefinition: 'Senior Frontend & Next.js 16 UI Architect para Envíos DosRuedas',
-      dosRuedasContext: `Plataforma logística en Mar del Plata, sede Friuli 1972, contexto ${input.pageName}`,
+      dosRuedasContext: `Logística urbana en Mar del Plata (Friuli 1972), contexto ${input.pageName}`,
       designTokensApplied: [
-        'Primary Blue #0636A5',
-        'Kinetic Yellow #FFF12E / #FFEC01',
-        'Midnight Navy #052C87',
-        'Font Display: Anton',
-        'Font Subheading: Bebas Neue',
-        'Font Body: Outfit',
-        'Font Monospace: Geist Mono',
-        'Border Radius: rounded-3xl / rounded-full',
+        'Brand Blue #0C59F2 (Único azul permitido)',
+        'Brand Yellow #FFF12E (Alta Visibilidad Neón)',
+        'Brand White #FFFFFF (Blanco Óptico Puro)',
+        'Font Display: Anton (72px / 48px uppercase)',
+        'Font Subheading: Bebas Neue (18px uppercase tracking 0.1em)',
+        'Font Body: Outfit (16px leading 1.6)',
+        'Font Data: Geist Mono (14px weight 600)',
+        'Sombra CTA: shadow-glow-yellow (rgba(255, 241, 46, 0.35))',
+        'Sombra Cards: shadow-card-elevation (rgba(12, 89, 242, 0.15))',
       ],
-      technicalStructure: `Next.js App Router, Tailwind CSS, ${presets.animationType === 'framer-motion' ? 'Framer Motion' : 'Tailwind Transitions'}, Lucide React`,
-      accessibilityWcag: 'Contraste alto sobre Midnight Navy, focus-visible con anillo amarillo, etiquetas semánticas y aria labels para lectores de pantalla.',
+      technicalStructure: `Next.js App Router, Tailwind CSS, ${presets.animationType === 'framer-motion' ? 'Framer Motion (stiffness: 100, damping: 20)' : 'Tailwind Transitions'}, Lucide React`,
+      accessibilityWcag: 'Contraste estricto: texto blanco sobre fondo azul #0C59F2, texto azul #0C59F2 sobre fondo blanco. Focus con ring #0C59F2. Cero grises o negros.',
       suggestedIcons,
     },
-    previewSummary: `Prompt de ingeniería frontend completo para generar el componente ${input.componentName} de la página ${input.pageName}, con tokens corporativos y especificaciones de docs/contenido.`,
+    previewSummary: `Prompt de ingeniería frontend completo para ${input.componentName} basado en el Design System oficial (#0C59F2, #FFF12E, #FFFFFF).`,
   };
 }
 
@@ -142,35 +158,39 @@ const promptDefinition = ai.definePrompt({
   name: 'optimizeWebComponentPromptTemplate',
   input: { schema: WebPromptInputSchema },
   output: { schema: WebPromptOutputSchema },
-  prompt: `You are the Principal Frontend Architect and Lead Design System Guardian for "Envíos DosRuedas", a high-performance last-mile logistics tech platform based in Mar del Plata, Argentina (2026 Edition).
+  prompt: `You are the Principal Frontend Architect and Lead Design System Guardian for "Envíos DosRuedas", an electric high-velocity urban logistics tech platform based in Mar del Plata, Argentina (2026 Edition).
 
 YOUR MISSION:
 Synthesize the provided component specifications from the official documentation (docs/contenido), design tokens, and user preferences into an EXHAUSTIVE, FLAWLESS, PRODUCTION-GRADE prompt written in NATURAL LANGUAGE.
 This prompt will be handed directly to an AI coding agent (Cursor, Antigravity, Claude Code) so it can implement the exact visual React component without ambiguities.
 
 ═══════════════════════════════════════════════
-DESIGN SYSTEM & TOKENS CONTRACT (IMMUTABLE)
+OFFICIAL DESIGN SYSTEM CONTRACT (STRICT 3-COLOR TRIAD)
 ═══════════════════════════════════════════════
-1. BRAND COLORS:
-   - Primary Brand (Speed Blue / Royal Egyptian Navy): #0636A5
-   - Brand Accent (High-Voltage Kinetic Yellow): #FFF12E or #FFEC01 (used for badges, hero highlights, glow effects)
-   - Dark Surfaces: Midnight Navy (#052C87) and Deep Contrast (#031E5C) — NEVER use generic Tailwind grays (bg-gray-800, bg-zinc-900 are STRICTLY FORBIDDEN)
-   - Surface White: #FFFFFF, Subtle text: #F8FAFC / #94A3B8
-   - Borders: border-white/10 to border-white/20, active borders border-[#FFF12E]/40
+1. BRAND COLORS (STRICT RULES):
+   - --color-brand-blue: #0C59F2 (Azul Eléctrico Institucional) -> IT IS THE ONLY BLUE ALLOWED IN THE ENTIRE APPLICATION. Zero navy (#052C87), zero deep dark blues, zero slate blue, zero blue-purple gradients.
+   - --color-brand-yellow: #FFF12E (Amarillo Neón de Alta Visibilidad) -> The ONLY accent color. Used exclusively for Primary CTAs, urgency badges (Express 30-90 min, Flex), and glow effects.
+   - --color-brand-white: #FFFFFF (Blanco Óptico Puro) -> Base surface for cards, modals, calculators, and high-contrast text on blue backgrounds.
+   - ANTI-PATTERN: NEVER use black (#000000) or generic gray. Text on white surfaces MUST be #0C59F2 or #0C59F2/80.
 
-2. TYPOGRAPHY HIERARCHY:
-   - Display & Hero Titles: 'Anton', sans-serif (UPPERCASE, tight leading, optional slight rotation -1deg)
-   - Badges, Metric Labels & Button CTAs: 'Bebas Neue', sans-serif (UPPERCASE, tracking-wider)
-   - Body & Explanatory Copy: 'Outfit', sans-serif (lineHeight relaxed)
-   - Numbers, Rates, Timers, Addresses & Geolocation: 'Geist Mono', monospace (tabular-nums)
+2. TYPOGRAPHY RULES:
+   - Anton ('Anton', sans-serif): Used exclusively for Display/Hero titles (72px desktop / 44px mobile, uppercase, leading 0.98, tracking -0.04em) and Section Headlines (48px, uppercase, leading 1.0). Banned for paragraphs.
+   - Bebas Neue ('"Bebas Neue"', sans-serif): Used for Subheadings, Badges, Navigation, and CTA Button text (18px, uppercase, tracking 0.1em, leading 1.0).
+   - Outfit ('Outfit', sans-serif): Used for Body copy, descriptions, and form labels (16px, leading 1.6, line length max 65 chars).
+   - Geist Mono ('"Geist Mono"', monospace): Used for rates, prices (ARS $X.XXX), distances (X.X km), phone numbers (223 660-2699), hours (08:00 a 19:00 hs). Weights 600/700. Never invent fantasy numbers.
+   - Prohibited Fonts: Inter, system serifs, generic system fonts.
 
-3. VISUAL SHAPES & ELEVATION:
-   - Cards & Bento containers: rounded-3xl (28px radius) with subtle borders and backdrop blur
-   - Badges & Action CTAs: rounded-full with shadow-glow-yellow (shadow-[0_0_20px_rgba(255,241,46,0.35)])
-   - Icons: STRICTLY use 'lucide-react' only
+3. COMPONENT STYLING:
+   - Primary CTA: Background #FFF12E, text #0C59F2, font Bebas Neue uppercase, rounded-full, shadow-glow-yellow (0 0 25px rgba(255, 241, 46, 0.35)). Hover: scale-[1.02], Active: scale-[0.98].
+   - Ghost CTA: Transparent bg, border-white/30, text #FFFFFF, rounded-full.
+   - Light Cards: Pure white #FFFFFF, rounded-2xl or rounded-3xl (24-28px), border border-[#0C59F2]/10, shadow-card-elevation (0 20px 40px -15px rgba(12, 89, 242, 0.15)). Text and icons in #0C59F2.
+   - Glassmorphic Cards: bg-white/10 backdrop-blur-md border border-white/20, text #FFFFFF.
+   - Inputs: White bg #FFFFFF, text #0C59F2, border border-[#0C59F2]/20, focus:ring-2 focus:ring-[#0C59F2].
+   - Bento Grids: 12-column asymmetric (7/5 or 8/4). No boring rows of 3 identical cards.
+   - Icons: STRICTLY use 'lucide-react' only. ZERO emojis.
 
 4. BRAND VOICE & LOCALIZATION:
-   - Authentic Rioplatense Spanish with voseo ("Cotizá", "Calculá", "Elegí", "Sumate", "Hablemos")
+   - Authentic Rioplatense Spanish with voseo ("Cotizá", "Calculá", "Elegí", "Sumate", "Hablemos").
    - Real operational context: Central warehouse at Friuli 1972 (Chauvín, Mar del Plata), delivery to General Pueyrredón and Batán.
 
 ═══════════════════════════════════════════════
@@ -191,7 +211,7 @@ INPUT SPECIFICATIONS:
   * Glow Neon: {{visualPresets.glowNeon}}
   * Double Bezel: {{visualPresets.doubleBezel}}
   * Glassmorphism: {{visualPresets.glassmorphism}}
-  * Midnight Navy Surface: {{visualPresets.navySurface}}
+  * White Card Surface: {{visualPresets.whiteSurface}}
   * Animation Engine: {{visualPresets.animationType}}
   * Target Viewport: {{visualPresets.targetDevice}}
 {{/if}}
@@ -235,7 +255,7 @@ const optimizeWebPromptFlow = ai.defineFlow(
 Component: ${input.componentName} (${input.componentPath}) on ${input.pageName}
 Category: ${input.category}
 Content: ${input.baselineContent}
-Tokens: #0636A5 (Speed Blue), #FFF12E (Neon Yellow), #052C87 (Midnight Navy), Anton, Bebas Neue, Outfit, Geist Mono.
+Enforce strict 3-color triad: Brand Blue #0C59F2 (the ONLY blue), Brand Yellow #FFF12E, Brand White #FFFFFF. Anton, Bebas Neue, Outfit, Geist Mono. Zero black, zero extra blues, zero emojis.
 Output must conform to WebPromptOutputSchema with title, optimizedPrompt (in rich natural language markdown), promptBreakdown, and previewSummary.`,
             output: { schema: WebPromptOutputSchema },
           });

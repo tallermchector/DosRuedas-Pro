@@ -23,6 +23,7 @@ export interface WebComponentItem {
   sectionTitle: string;
   currentText: string;
   elementsToReview: string[];
+  searchIndex: string; // Precomputed for O(1) string search without re-allocating in loop
   recommendedTokens?: {
     typography?: string;
     colors?: string;
@@ -60,18 +61,19 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
     componentName: "DoubleBezelCard",
     componentPath: "src/components/ui/DoubleBezelCard.tsx",
     sectionTitle: "Card con Bisel Doble & Elevación",
-    currentText: "Contenedor de tarjeta insigne de DosRuedas con borde doble concéntrico, fondo Navy Midnight (#052C87) y resplandor sutil.",
+    currentText: "Contenedor insigne de DosRuedas con borde doble concéntrico, superficie blanca pura (#FFFFFF) con textos en Azul Eléctrico (#0C59F2) o versión translúcida bg-white/10.",
     elementsToReview: [
-      "Doble borde concéntrico (exterior border-brand-white/10, interior border-brand-white/20)",
-      "Curvatura rounded-3xl (28px de radio)",
-      "Backdrop blur y sombreado profundo para elevación B2B",
-      "Soporte para hover con traslación suave (-translate-y-1)"
+      "Doble borde concéntrico exterior e interior con border-white/20 o border-[#0C59F2]/15",
+      "Curvatura rounded-3xl (24-28px de radio)",
+      "Elevación con shadow-card-elevation (rgba(12, 89, 242, 0.15))",
+      "Soporte para hover con traslación suave (scale-[1.01] o -translate-y-0.5)"
     ],
+    searchIndex: "uikit-double-bezel doublebezelcard card bisel doble elevacion ui kit #0c59f2 #fff12e",
     recommendedTokens: {
-      typography: "Bebas Neue en títulos, Outfit en descripciones",
-      colors: "Borde #FFF12E con opacidad 20%, Fondo #052C87",
-      surfaces: "rounded-3xl, shadow-2xl, backdrop-blur-md",
-      interactions: "hover:border-[#FFF12E]/50 transition-all duration-300"
+      typography: "Anton en títulos, Bebas Neue en badges, Outfit en descripciones",
+      colors: "Brand Blue #0C59F2, Brand Yellow #FFF12E, Brand White #FFFFFF",
+      surfaces: "rounded-3xl, shadow-card-elevation, border border-[#0C59F2]/10",
+      interactions: "hover:scale-[1.01] transition-transform duration-200"
     }
   },
   {
@@ -81,18 +83,19 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
     componentName: "CTANestedPill",
     componentPath: "src/components/ui/CTANestedPill.tsx",
     sectionTitle: "Botón Píldora Anidada con Glow Neón",
-    currentText: "Botón de acción principal con píldora anidada y resplandor amarillo eléctrico (#FFF12E / #FFEC01).",
+    currentText: "Botón de acción principal con cápsula redondeada, fondo Amarillo Neón (#FFF12E), texto Azul Eléctrico (#0C59F2) y resplandor activo.",
     elementsToReview: [
-      "Estructura anidada con cápsula exterior de micro-glow y botón interno",
-      "Fondo High-Voltage Yellow (#FFF12E) con texto Speed Blue (#0636A5)",
-      "Tipografía Bebas Neue en mayúsculas con espaciado tracking-wider",
-      "Microinteracción hover con scale-105 y shadow-glow-yellow"
+      "Fondo Amarillo Neón (#FFF12E) con texto Azul Eléctrico (#0C59F2)",
+      "Tipografía Bebas Neue en mayúsculas con espaciado tracking-wider (0.1em)",
+      "Esquinas en píldora completa rounded-full",
+      "Sombra reflectiva shadow-glow-yellow (rgba(255, 241, 46, 0.35)) y micro-escala al pulsar"
     ],
+    searchIndex: "uikit-cta-nested-pill ctanestedpill boton pildora anidada glow neon #fff12e #0c59f2 bebas neue",
     recommendedTokens: {
       typography: "Bebas Neue uppercase tracking-wider",
-      colors: "Fondo #FFF12E, Texto #0636A5, Glow rgba(255,241,46,0.4)",
-      surfaces: "rounded-full, shadow-[0_0_20px_rgba(255,241,46,0.35)]",
-      interactions: "active:scale-95 transition-transform duration-150"
+      colors: "Fondo #FFF12E, Texto #0C59F2, Glow rgba(255,241,46,0.35)",
+      surfaces: "rounded-full, shadow-glow-yellow",
+      interactions: "hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
     }
   },
   {
@@ -101,19 +104,20 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
     category: "uikit",
     componentName: "BentoGrid",
     componentPath: "src/components/ui/BentoGrid.tsx",
-    sectionTitle: "Bento Grid Asimétrico Responsive",
-    currentText: "Sistema de grilla modular asimétrica para presentar métricas, flota y tecnología de última milla.",
+    sectionTitle: "Bento Grid Asimétrico 12 Columnas",
+    currentText: "Distribución bento asimétrica (módulos 7/5 y 8/4) para presentar servicios, métricas y flota urbana de Mar del Plata.",
     elementsToReview: [
-      "Distribución en grilla de 12 columnas (ej. 7:5 o 4:4:4)",
-      "Tarjetas modulares con diferentes densidades de contenido",
-      "Marcas de agua gigantes con opacidad al 10%",
-      "Cifras tabulares con Geist Mono"
+      "Grilla de 12 columnas (grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8)",
+      "Tarjetas modulares en Blanco Óptico (#FFFFFF) con textos en Azul Eléctrico (#0C59F2)",
+      "Datos de precisión formateados en Geist Mono",
+      "Prohibida la fila monótona de 3 tarjetas idénticas"
     ],
+    searchIndex: "uikit-bento-grid bentogrid bento grid asimetrico 12 columnas #0c59f2 #ffffff anton geist mono",
     recommendedTokens: {
-      typography: "Anton en encabezados principales, Geist Mono en métricas",
-      colors: "Midnight Navy #052C87 y Deep Contrast #031E5C",
-      surfaces: "rounded-3xl border border-white/10 p-6 md:p-8",
-      interactions: "hover:border-[#2563eb]/40"
+      typography: "Anton (títulos 48px), Bebas Neue (badges), Geist Mono (datos)",
+      colors: "Brand Blue #0C59F2, Brand White #FFFFFF, Brand Yellow #FFF12E",
+      surfaces: "rounded-3xl bg-white shadow-card-elevation p-6 md:p-8",
+      interactions: "hover:shadow-card-elevation transition-all"
     }
   },
   {
@@ -122,19 +126,20 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
     category: "uikit",
     componentName: "InputField",
     componentPath: "src/components/ui/InputField.tsx",
-    sectionTitle: "Input Transparente con Foco Neón",
-    currentText: "Campo de entrada estilizado para cotizadores y formularios comerciales con borde luminoso.",
+    sectionTitle: "Input Blanco con Foco en Azul Eléctrico",
+    currentText: "Campo de formulario con label superior en Outfit semibold en #0C59F2, fondo blanco #FFFFFF y foco directo con anillo en #0C59F2.",
     elementsToReview: [
-      "Fondo oscuro semitransparente bg-white/5",
-      "Borde fino border-white/20 con transición a border-[#FFF12E] en focus",
-      "Etiqueta flotante o superior en Outfit / Bebas Neue",
+      "Fondo blanco óptico #FFFFFF con texto de alta legibilidad en #0C59F2",
+      "Borde sutil con transición a focus:ring-2 focus:ring-[#0C59F2]",
+      "Label superior en Outfit semibold en #0C59F2",
       "Integración nativa para iconos de Lucide (Search, MapPin, Phone)"
     ],
+    searchIndex: "uikit-input-field inputfield input formulario cotizador #ffffff #0c59f2 outfit lucide",
     recommendedTokens: {
-      typography: "Outfit regular 15px, placeholder en slate-400",
-      colors: "Focus border #FFF12E, anillado focus:ring-1 focus:ring-[#FFF12E]",
-      surfaces: "rounded-xl bg-white/5 px-4 py-3 text-white",
-      interactions: "transition-all duration-200 outline-none"
+      typography: "Outfit regular 16px para texto, semibold para label",
+      colors: "Background #FFFFFF, Text #0C59F2, Focus ring #0C59F2",
+      surfaces: "rounded-xl border border-[#0C59F2]/20 px-4 py-3",
+      interactions: "transition-all duration-200 outline-none focus:ring-2"
     }
   },
   {
@@ -143,19 +148,20 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
     category: "uikit",
     componentName: "StepperHorizontal",
     componentPath: "src/components/ui/StepperHorizontal.tsx",
-    sectionTitle: "Paso a Paso Horizontal con Línea Progresiva",
-    currentText: "Visualizador de etapas operativas (1. Cotizá -> 2. Retiramos -> 3. Entregamos) para servicios express y flex.",
+    sectionTitle: "Paso a Paso Horizontal con Nodos Activos",
+    currentText: "Visualizador de etapas operativas (1. Cotizá -> 2. Retiramos -> 3. Entregamos en 30-90 min) para servicios express y flex.",
     elementsToReview: [
-      "Nodos circulares numerados con borde activo en amarillo",
-      "Línea de conexión animada o con gradiente progresivo",
+      "Nodos circulares numerados en Amarillo Neón (#FFF12E) con números en Azul Eléctrico (#0C59F2)",
+      "Línea de conexión en blanco translúcido o azul institucional",
       "Títulos de paso en Bebas Neue y descripciones en Outfit",
-      "Adaptabilidad a scroll horizontal o apilado vertical en pantallas móviles"
+      "Colapso limpio a columna vertical en pantallas menores a 768px"
     ],
+    searchIndex: "uikit-stepper-horiz stepperhorizontal stepper proceso etapas #fff12e #0c59f2 bebas neue",
     recommendedTokens: {
       typography: "Bebas Neue en números y títulos de paso",
-      colors: "Nodo activo #FFF12E con texto #0636A5, línea inactiva white/20",
+      colors: "Nodo activo #FFF12E con texto #0C59F2, línea inactiva white/30",
       surfaces: "Nodos w-10 h-10 rounded-full flex items-center justify-center font-bold",
-      interactions: "Animación de entrada escalonada"
+      interactions: "Transición fluida con física de resorte (stiffness: 100, damping: 20)"
     }
   }
 ];
@@ -163,6 +169,8 @@ const UI_KIT_ITEMS: WebComponentItem[] = [
 // Convert reviewCatalog items to WebComponentItem
 const MAPPED_CATALOG_ITEMS: WebComponentItem[] = reviewCatalog.map((item) => {
   const category = inferCategory(item);
+  const searchIndex = `${item.id} ${item.componentName} ${item.page} ${item.sectionTitle} ${item.currentText} ${item.elementsToReview.join(' ')}`.toLowerCase();
+  
   return {
     id: item.id,
     page: item.page,
@@ -172,11 +180,14 @@ const MAPPED_CATALOG_ITEMS: WebComponentItem[] = reviewCatalog.map((item) => {
     sectionTitle: item.sectionTitle,
     currentText: item.currentText,
     elementsToReview: item.elementsToReview,
+    searchIndex,
     recommendedTokens: {
-      typography: category === 'hero' ? 'Anton (títulos) + Bebas Neue (badges) + Outfit (copete)' : 'Bebas Neue + Outfit + Geist Mono (datos)',
-      colors: 'Primary #0636A5, Accent #FFF12E / #FFEC01, Dark Card #052C87',
-      surfaces: 'rounded-3xl (cards), rounded-full (CTAs & badges)',
-      interactions: 'hover:-translate-y-0.5 hover:shadow-glow-yellow transition-all duration-200'
+      typography: category === 'hero' 
+        ? 'Anton (72px/48px uppercase) + Bebas Neue (badges/CTAs) + Outfit (párrafos 16px)' 
+        : 'Bebas Neue (subtítulos) + Outfit (lectura) + Geist Mono (datos/precios)',
+      colors: 'Brand Blue #0C59F2, Brand Yellow #FFF12E, Brand White #FFFFFF',
+      surfaces: 'Fondo institucional #0C59F2 con tarjetas #FFFFFF (shadow-card-elevation) o translúcidas bg-white/10 (rounded-3xl)',
+      interactions: 'CTAs rounded-full en #FFF12E con shadow-glow-yellow y hover:scale-[1.02]'
     }
   };
 });
@@ -187,11 +198,16 @@ export const WEB_COMPONENTS_CATALOG: WebComponentItem[] = [
   ...MAPPED_CATALOG_ITEMS
 ];
 
+// Hoisted static lists (Vercel Best Practice: js-combine-iterations, avoid re-evaluating in render)
+export const ALL_PAGES: string[] = Array.from(
+  new Set(WEB_COMPONENTS_CATALOG.map(item => item.page))
+);
+
 // Categories definition with Spanish labels and Lucide icon keys
 export const CATEGORY_DEFINITIONS: { key: ComponentCategory; label: string; iconKey: string }[] = [
   { key: 'hero', label: 'Heros & Cabeceras', iconKey: 'Sparkles' },
   { key: 'cards', label: 'Cards & Soluciones', iconKey: 'Layers' },
-  { key: 'bento', label: 'Bento Grids & Visión', iconKey: 'LayoutGrid' },
+  { key: 'bento', label: 'Bento Grids Asimétricos', iconKey: 'LayoutGrid' },
   { key: 'form', label: 'Formularios & Cotizadores', iconKey: 'FileText' },
   { key: 'cta', label: 'CTAs & Cierres', iconKey: 'Send' },
   { key: 'table', label: 'Tablas & Tarifarios', iconKey: 'Table' },
@@ -205,37 +221,32 @@ export const CATEGORY_DEFINITIONS: { key: ComponentCategory; label: string; icon
 
 // Query Helpers
 export function getAllPages(): string[] {
-  const pagesSet = new Set<string>();
-  WEB_COMPONENTS_CATALOG.forEach(item => pagesSet.add(item.page));
-  return Array.from(pagesSet);
+  return ALL_PAGES;
 }
 
 export function getWebComponentById(id: string): WebComponentItem | undefined {
   return WEB_COMPONENTS_CATALOG.find(item => item.id === id);
 }
 
+// Fast filter using pre-computed searchIndex (Vercel Best Practice: js-cache-property-access)
 export function filterWebComponents(params: {
   page?: string;
   category?: ComponentCategory | 'all';
   searchQuery?: string;
 }): WebComponentItem[] {
+  const query = params.searchQuery ? params.searchQuery.trim().toLowerCase() : '';
+  const pageFilter = params.page && params.page !== 'all' ? params.page : null;
+  const categoryFilter = params.category && params.category !== 'all' ? params.category : null;
+
   return WEB_COMPONENTS_CATALOG.filter(item => {
-    if (params.page && params.page !== 'all' && item.page !== params.page) {
+    if (pageFilter !== null && item.page !== pageFilter) {
       return false;
     }
-    if (params.category && params.category !== 'all' && item.category !== params.category) {
+    if (categoryFilter !== null && item.category !== categoryFilter) {
       return false;
     }
-    if (params.searchQuery && params.searchQuery.trim()) {
-      const q = params.searchQuery.toLowerCase();
-      const matchText = (
-        item.componentName + ' ' +
-        item.sectionTitle + ' ' +
-        item.page + ' ' +
-        item.currentText + ' ' +
-        item.elementsToReview.join(' ')
-      ).toLowerCase();
-      if (!matchText.includes(q)) return false;
+    if (query !== '' && !item.searchIndex.includes(query)) {
+      return false;
     }
     return true;
   });
