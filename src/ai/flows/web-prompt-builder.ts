@@ -1,46 +1,44 @@
-import { z } from 'zod';
+// ==========================================
+// INPUT & OUTPUT INTERFACES (Pure TypeScript)
+// ==========================================
+export interface WebPromptVisualPresets {
+  glowNeon?: boolean;
+  doubleBezel?: boolean;
+  glassmorphism?: boolean;
+  whiteSurface?: boolean;
+  animationType?: 'framer-motion' | 'tailwind-css' | 'none';
+  targetDevice?: 'responsive-hybrid' | 'mobile-first' | 'desktop-enterprise';
+}
+
+export interface WebPromptInput {
+  componentName: string;
+  pageName: string;
+  category: string;
+  componentPath: string;
+  baselineContent: string;
+  elementsToReview?: string[];
+  visualPresets?: WebPromptVisualPresets;
+  customDirectives?: string;
+}
+
+export interface WebPromptOutputBreakdown {
+  roleDefinition: string;
+  dosRuedasContext: string;
+  designTokensApplied: string[];
+  technicalStructure: string;
+  accessibilityWcag: string;
+  suggestedIcons: string[];
+}
+
+export interface WebPromptOutput {
+  title: string;
+  optimizedPrompt: string;
+  promptBreakdown: WebPromptOutputBreakdown;
+  previewSummary: string;
+}
 
 // ==========================================
-// INPUT & OUTPUT SCHEMAS
-// ==========================================
-export const WebPromptInputSchema = z.object({
-  componentName: z.string().describe('Name of the component to create/refactor (e.g. Hero, ServicesOverview, BentoGrid).'),
-  pageName: z.string().describe('Target page or section context (e.g. Home (Inicio), Cotizador Express).'),
-  category: z.string().describe('Component category: hero, cards, bento, form, cta, table, stats, stepper, faq, slider, uikit, legal.'),
-  componentPath: z.string().describe('Expected repository file path (e.g. src/components/Hero.tsx).'),
-  baselineContent: z.string().describe('Text copy, data, and functional requirements from docs/contenido.'),
-  elementsToReview: z.array(z.string()).default([]).describe('Mandatory visual specs or review criteria.'),
-  visualPresets: z.object({
-    glowNeon: z.boolean().default(true).describe('Include High-Visibility Neon Yellow (#FFF12E) glow effects.'),
-    doubleBezel: z.boolean().default(false).describe('Use DoubleBezelCard concentric borders.'),
-    glassmorphism: z.boolean().default(true).describe('Use backdrop-blur-md and semi-transparent white surfaces (bg-white/10).'),
-    whiteSurface: z.boolean().default(true).describe('Use pure optical white (#FFFFFF) card surface with #0C59F2 text.'),
-    animationType: z.enum(['framer-motion', 'tailwind-css', 'none']).default('framer-motion').describe('Animation engine to specify.'),
-    targetDevice: z.enum(['responsive-hybrid', 'mobile-first', 'desktop-enterprise']).default('responsive-hybrid').describe('Target viewport priority.'),
-  }).optional(),
-  customDirectives: z.string().optional().describe('Additional free-form instructions provided by the user.'),
-});
-
-export type WebPromptInput = z.infer<typeof WebPromptInputSchema>;
-
-export const WebPromptOutputSchema = z.object({
-  title: z.string().describe('Descriptive title of the prompt.'),
-  optimizedPrompt: z.string().describe('The complete, production-ready natural language prompt for an AI coding assistant.'),
-  promptBreakdown: z.object({
-    roleDefinition: z.string().describe('Architect role and mission assigned to the AI.'),
-    dosRuedasContext: z.string().describe('Business and geographic context (Mar del Plata 2026).'),
-    designTokensApplied: z.array(z.string()).describe('List of design tokens enforced (colors, fonts, radius).'),
-    technicalStructure: z.string().describe('Component layout, state management, and props structure.'),
-    accessibilityWcag: z.string().describe('WCAG AA contrast, focus states, and aria standards.'),
-    suggestedIcons: z.array(z.string()).describe('Lucide React icons recommended for this component.'),
-  }),
-  previewSummary: z.string().describe('Executive summary of what this component will deliver.'),
-});
-
-export type WebPromptOutput = z.infer<typeof WebPromptOutputSchema>;
-
-// ==========================================
-// DETERMINISTIC PROMPT BUILDER (Resilient Fallback)
+// DETERMINISTIC PROMPT BUILDER (Resilient Fallback & Client Utility)
 // ==========================================
 export function buildDeterministicWebPrompt(input: WebPromptInput): WebPromptOutput {
   const presets = input.visualPresets || {

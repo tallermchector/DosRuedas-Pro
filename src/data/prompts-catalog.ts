@@ -50,6 +50,10 @@ export interface PromptItem {
     seed?: number;
     safetyTolerance?: number;
     outputFormat?: 'png' | 'jpeg' | 'webp';
+    aspectRatio?: string;
+    resolution?: string;
+    limitGenerations?: boolean;
+    enableWebSearch?: boolean;
   };
 }
 
